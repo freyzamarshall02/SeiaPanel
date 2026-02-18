@@ -1,0 +1,189 @@
+/* ========================================
+   CONSOLE.CSS - Console & Terminal Pages
+   ======================================== */
+
+/* ========== CONSOLE LAYOUT ========== */
+.console-layout {
+    display: flex;
+    height: calc(100vh - 80px);
+    gap: 20px;
+    padding: 20px;
+}
+
+.console-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.console-sidebar {
+    width: 280px;
+}
+
+/* ========== CONSOLE OUTPUT ========== */
+.console-output {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    background: #0f172a;
+    color: #e2e8f0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.console-output div {
+    margin-bottom: 2px;
+}
+
+/* ========== CONSOLE INPUT ========== */
+.console-input {
+    display: flex;
+    align-items: center;
+    padding: 16px 20px;
+    background: rgba(30, 41, 59, 0.95);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    gap: 12px;
+}
+
+.console-prompt {
+    color: #60a5fa;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+}
+
+.console-input input {
+    flex: 1;
+    padding: 8px 12px;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    color: #fff;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+}
+
+.console-input input:focus {
+    outline: none;
+    border-color: #60a5fa;
+}
+
+/* ========== UPTIME CARDS ========== */
+.uptime-card {
+    background: rgba(30, 41, 59, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+.uptime-card:last-child {
+    margin-bottom: 0;
+}
+
+.uptime-icon {
+    margin-bottom: 16px;
+    color: #60a5fa;
+}
+
+.uptime-label {
+    font-size: 14px;
+    color: #94a3b8;
+    margin-bottom: 8px;
+}
+
+.uptime-value {
+    font-size: 24px;
+    font-weight: 600;
+    color: #e2e8f0;
+}
+
+/* ========== RESPONSIVE - MOBILE ========== */
+@media (max-width: 768px) {
+    .console-layout {
+        flex-direction: column;
+        padding: 12px;
+        gap: 12px;
+        height: auto;
+        min-height: calc(100vh - 100px);
+    }
+
+    .console-main {
+        flex: 0 0 auto;
+        min-height: 450px;
+        max-height: 600px;
+        height: auto;
+    }
+
+    .console-output {
+        padding: 12px;
+        font-size: 11px;
+        line-height: 1.4;
+        height: 450px;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .console-input {
+        padding: 12px;
+        flex-shrink: 0;
+    }
+
+    .console-sidebar {
+        width: 100%;
+        flex-shrink: 0;
+        margin-bottom: 20px;
+    }
+
+    .uptime-card {
+        padding: 20px;
+    }
+
+    .uptime-value {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .console-output {
+        font-size: 10px;
+        line-height: 1.3;
+        padding: 10px;
+        height: 400px;
+    }
+
+    .console-input {
+        padding: 10px;
+    }
+
+    .console-input input {
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+
+    .uptime-value {
+        font-size: 18px;
+    }
+
+    .console-layout {
+        padding: 8px;
+        gap: 8px;
+        min-height: calc(100vh - 90px);
+    }
+
+    .console-main {
+        min-height: 400px;
+        max-height: 550px;
+    }
+
+    .console-sidebar {
+        margin-bottom: 60px;
+    }
+}

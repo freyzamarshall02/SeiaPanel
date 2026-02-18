@@ -1,0 +1,26 @@
+/* ========================================
+   STYLE.CSS - Main Stylesheet
+   Imports all component stylesheets
+   ======================================== */
+
+/* Base styles - Reset, variables, typography */
+@import url('base.css');
+
+/* Reusable components - Buttons, forms, alerts, cards */
+@import url('components.css');
+
+/* Authentication pages - Login, register */
+@import url('auth.css');
+
+/* Dashboard layout - Sidebar, navigation, main content */
+@import url('dashboard.css');
+
+/* Console pages - Terminal, command input, stats */
+@import url('console.css');
+
+/* Files pages - File Manager */
+@import url('files.css');
+
+/* ========================================
+   Additional custom styles can go here
+   ======================================== */

@@ -1,0 +1,1616 @@
+/* ========================================
+   FILES.CSS - File Manager Styling
+   ======================================== */
+
+/* ========== FILE MANAGER CONTAINER ========== */
+.file-manager-container {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 80px);
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 20px;
+}
+
+/* ========== TOP BAR ========== */
+.file-manager-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    background: rgba(30, 41, 59, 0.95);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.file-manager-header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+}
+
+.file-manager-header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* ========== SELECT ALL CHECKBOX ========== */
+.select-all-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.select-all-checkbox {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: #3b82f6;
+}
+
+.select-all-label {
+    font-size: 14px;
+    color: #94a3b8;
+    cursor: pointer;
+    user-select: none;
+}
+
+/* ========== CLIPBOARD BUTTONS (PASTE & CANCEL) ========== */
+.clipboard-buttons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.clipboard-buttons .action-btn {
+    padding: 8px 16px;
+    animation: slideInFromTop 0.3s ease-out;
+}
+
+@keyframes slideInFromTop {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ========== BREADCRUMB NAVIGATION ========== */
+.breadcrumb-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    padding-left: 16px;
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.breadcrumb::-webkit-scrollbar {
+    height: 4px;
+}
+
+.breadcrumb::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.5);
+}
+
+.breadcrumb::-webkit-scrollbar-thumb {
+    background: rgba(96, 165, 250, 0.5);
+    border-radius: 2px;
+}
+
+.breadcrumb-item {
+    font-size: 14px;
+    color: #60a5fa;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.breadcrumb-item:hover {
+    color: #93c5fd;
+    text-decoration: underline;
+}
+
+.breadcrumb-item.active {
+    color: #e2e8f0;
+    cursor: default;
+    pointer-events: none;
+}
+
+.breadcrumb-separator {
+    color: #64748b;
+    font-size: 14px;
+}
+
+/* ========== ACTION BUTTONS ========== */
+.action-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.action-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.action-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+.action-btn-primary {
+    background: #334155;
+    color: #e2e8f0;
+}
+
+.action-btn-primary:hover {
+    background: #475569;
+}
+
+.action-btn-success {
+    background: #0ea5e9;
+    color: #fff;
+}
+
+.action-btn-success:hover {
+    background: #0284c7;
+}
+
+.action-btn-info {
+    background: #10b981;
+    color: #fff;
+}
+
+.action-btn-info:hover {
+    background: #059669;
+}
+
+/* ========== VIEW TOGGLE ========== */
+.view-toggle {
+    display: flex;
+    gap: 4px;
+    background: rgba(15, 23, 42, 0.6);
+    border-radius: 8px;
+    padding: 4px;
+}
+
+.view-toggle-btn {
+    padding: 8px;
+    border: none;
+    background: transparent;
+    color: #94a3b8;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.view-toggle-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+.view-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #e2e8f0;
+}
+
+.view-toggle-btn.active {
+    background: #3b82f6;
+    color: #fff;
+}
+
+/* ========== FILE LIST CONTAINER ========== */
+.file-list-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+/* ========== LIST VIEW ========== */
+.file-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.file-item {
+    display: flex;
+    align-items: center;
+    padding: 16px 20px;
+    background: rgba(30, 41, 59, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: none;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.file-item:first-child {
+    border-radius: 12px 12px 0 0;
+}
+
+.file-item:last-child {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 0 0 12px 12px;
+}
+
+.file-item:only-child {
+    border-radius: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.file-item:hover {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: rgba(59, 130, 246, 0.2);
+}
+
+.file-item.selected {
+    background: rgba(59, 130, 246, 0.2);
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+.file-item-checkbox {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: #3b82f6;
+    margin-right: 16px;
+}
+
+.file-item-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 12px;
+    color: #60a5fa;
+}
+
+.file-item-icon.folder {
+    color: #60a5fa;
+}
+
+.file-item-icon.file {
+    color: #94a3b8;
+}
+
+.file-item-name {
+    flex: 1;
+    font-size: 14px;
+    color: #e2e8f0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.file-item-size {
+    width: 100px;
+    text-align: right;
+    font-size: 13px;
+    color: #94a3b8;
+    margin-right: 20px;
+}
+
+.file-item-modified {
+    width: 180px;
+    text-align: right;
+    font-size: 13px;
+    color: #94a3b8;
+    margin-right: 16px;
+}
+
+.file-item-actions {
+    width: 40px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.file-item-menu-btn {
+    padding: 4px;
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.file-item-menu-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #e2e8f0;
+}
+
+.file-item-menu-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* ========== GRID VIEW ========== */
+.file-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 16px;
+}
+
+.file-grid-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background: rgba(30, 41, 59, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+}
+
+.file-grid-item:hover {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: rgba(59, 130, 246, 0.2);
+    transform: translateY(-2px);
+}
+
+.file-grid-item.selected {
+    background: rgba(59, 130, 246, 0.2);
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+.file-grid-item-checkbox {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: #3b82f6;
+}
+
+.file-grid-item-menu-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 4px;
+    background: rgba(15, 23, 42, 0.8);
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.file-grid-item-menu-btn:hover {
+    background: rgba(30, 41, 59, 0.9);
+    color: #e2e8f0;
+}
+
+.file-grid-item-menu-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+.file-grid-item-icon {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 12px;
+    color: #60a5fa;
+}
+
+.file-grid-item-icon.folder {
+    color: #60a5fa;
+}
+
+.file-grid-item-icon.file {
+    color: #94a3b8;
+}
+
+.file-grid-item-name {
+    font-size: 13px;
+    color: #e2e8f0;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+    margin-bottom: 4px;
+}
+
+.file-grid-item-size {
+    font-size: 11px;
+    color: #64748b;
+}
+
+/* ========== FLOATING ACTION BUTTONS ========== */
+.floating-actions {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    display: flex;
+    gap: 12px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+.floating-actions.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+}
+
+.floating-action-btn {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    position: relative;
+}
+
+.floating-action-btn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+}
+
+.floating-action-btn svg {
+    width: 24px;
+    height: 24px;
+}
+
+.floating-action-btn-add {
+    background: #0ea5e9;
+    color: #fff;
+}
+
+.floating-action-btn-add:hover {
+    background: #0284c7;
+}
+
+.floating-action-btn-copy {
+    background: #10b981;
+    color: #fff;
+}
+
+.floating-action-btn-copy:hover {
+    background: #059669;
+}
+
+.floating-action-btn-archive {
+    background: #64748b;
+    color: #fff;
+}
+
+.floating-action-btn-archive:hover {
+    background: #475569;
+}
+
+.floating-action-btn-delete {
+    background: #ef4444;
+    color: #fff;
+}
+
+.floating-action-btn-delete:hover {
+    background: #dc2626;
+}
+
+/* Tooltip on hover */
+.floating-action-btn::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    right: 0;
+    margin-bottom: 8px;
+    padding: 6px 12px;
+    background: rgba(15, 23, 42, 0.95);
+    color: #e2e8f0;
+    font-size: 12px;
+    border-radius: 6px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+
+.floating-action-btn:hover::after {
+    opacity: 1;
+}
+
+/* ========== EMPTY STATE ========== */
+.file-list-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    color: #64748b;
+}
+
+.file-list-empty svg {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+.file-list-empty-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #94a3b8;
+}
+
+.file-list-empty-description {
+    font-size: 14px;
+    color: #64748b;
+}
+
+/* ========== LOADING STATE ========== */
+.file-list-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    color: #94a3b8;
+}
+
+.file-list-loading svg {
+    width: 32px;
+    height: 32px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ========== CONTEXT MENU (THREE DOTS) ========== */
+
+/* Context Menu Container (Portal - appended to body) */
+.context-menu {
+    position: fixed;
+    background: rgba(15, 23, 42, 0.98);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    min-width: 200px;
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.95);
+    transition: all 0.15s ease;
+    padding: 6px;
+}
+
+.context-menu.show {
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1);
+}
+
+.context-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    color: #e2e8f0;
+    font-size: 13px;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.15s;
+    user-select: none;
+}
+
+.context-menu-item:hover {
+    background: rgba(59, 130, 246, 0.2);
+}
+
+.context-menu-item svg {
+    width: 16px;
+    height: 16px;
+    color: #94a3b8;
+    flex-shrink: 0;
+}
+
+.context-menu-item.danger {
+    color: #fca5a5;
+}
+
+.context-menu-item.danger:hover {
+    background: rgba(239, 68, 68, 0.2);
+}
+
+.context-menu-item.danger svg {
+    color: #ef4444;
+}
+
+.context-menu-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 6px 0;
+}
+
+/* Mobile Context Menu (Bottom Sheet) */
+@media (max-width: 640px) {
+    .context-menu {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        min-width: unset;
+        border-radius: 16px 16px 0 0;
+        transform: translateY(100%);
+        opacity: 1;
+        visibility: visible;
+        max-height: 70vh;
+        overflow-y: auto;
+        padding: 12px;
+    }
+
+    .context-menu.show {
+        transform: translateY(0);
+    }
+
+    .context-menu-item {
+        padding: 14px 16px;
+        font-size: 14px;
+    }
+
+    .context-menu-item svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    /* Add handle at top */
+    .context-menu::before {
+        content: '';
+        position: absolute;
+        top: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 40px;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 2px;
+    }
+
+    .context-menu {
+        padding-top: 24px;
+    }
+}
+
+/* Context Menu Backdrop for Mobile */
+.context-menu-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+}
+
+.context-menu-backdrop.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+@media (min-width: 641px) {
+    .context-menu-backdrop {
+        display: none;
+    }
+}
+
+/* ========== MODALS ========== */
+
+/* Upload Indicator Badge */
+.upload-indicator {
+    position: relative;
+    padding: 8px;
+    border: none;
+    background: rgba(15, 23, 42, 0.6);
+    border-radius: 8px;
+    color: #60a5fa;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.upload-indicator:hover {
+    background: rgba(59, 130, 246, 0.2);
+}
+
+.upload-indicator svg {
+    width: 18px;
+    height: 18px;
+}
+
+.upload-indicator-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: #ef4444;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 10px;
+    min-width: 18px;
+    text-align: center;
+}
+
+/* Drag & Drop Overlay */
+.drag-drop-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9998;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.drag-drop-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.drag-drop-box {
+    background: rgba(30, 41, 59, 0.95);
+    border: 2px dashed #60a5fa;
+    border-radius: 16px;
+    padding: 60px 80px;
+    text-align: center;
+    pointer-events: none;
+}
+
+.drag-drop-box svg {
+    width: 64px;
+    height: 64px;
+    color: #60a5fa;
+    margin-bottom: 20px;
+}
+
+.drag-drop-box p {
+    font-size: 18px;
+    color: #e2e8f0;
+    font-weight: 500;
+}
+
+/* Upload Progress Panel */
+.upload-panel {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 400px;
+    max-height: 500px;
+    background: rgba(30, 41, 59, 0.98);
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 9997;
+    display: flex;
+    flex-direction: column;
+    transform: translateY(calc(100% + 40px));
+    transition: transform 0.3s ease;
+}
+
+.upload-panel.show {
+    transform: translateY(0);
+}
+
+.upload-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.upload-panel-header h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #e2e8f0;
+}
+
+.upload-panel-close {
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: transparent;
+    color: #94a3b8;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.upload-panel-close:hover {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+.upload-panel-close svg {
+    width: 18px;
+    height: 18px;
+}
+
+.upload-panel-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 20px;
+    max-height: 350px;
+}
+
+.upload-panel-footer {
+    padding: 12px 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+/* Upload Item */
+.upload-item {
+    padding: 12px 16px;
+    background: rgba(15, 23, 42, 0.6);
+    border-radius: 8px;
+    margin-bottom: 12px;
+    transition: all 0.3s;
+}
+
+.upload-item:last-child {
+    margin-bottom: 0;
+}
+
+.upload-item-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.upload-item-name {
+    font-size: 13px;
+    color: #e2e8f0;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    margin-right: 12px;
+}
+
+.upload-item-cancel {
+    width: 24px;
+    height: 24px;
+    border: none;
+    background: transparent;
+    color: #94a3b8;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    flex-shrink: 0;
+}
+
+.upload-item-cancel:hover {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+.upload-item-cancel svg {
+    width: 16px;
+    height: 16px;
+}
+
+.upload-progress-bar {
+    height: 6px;
+    background: rgba(15, 23, 42, 0.8);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 6px;
+}
+
+.upload-progress-fill {
+    height: 100%;
+    background: #3b82f6;
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+.upload-progress-fill.success {
+    background: #10b981;
+}
+
+.upload-progress-fill.failed {
+    background: #ef4444;
+}
+
+.upload-item-status {
+    font-size: 11px;
+    color: #94a3b8;
+}
+
+.upload-item-status.success {
+    color: #10b981;
+}
+
+.upload-item-status.failed {
+    color: #ef4444;
+}
+
+.upload-item-status.cancelled {
+    color: #64748b;
+}
+
+/* Modal Overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.modal-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Modal Container */
+.modal {
+    background: rgba(30, 41, 59, 0.98);
+    border-radius: 12px;
+    width: 90%;
+    max-width: 480px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-overlay.show .modal {
+    transform: scale(1);
+}
+
+/* Modal Header */
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #e2e8f0;
+}
+
+.modal-close {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    color: #94a3b8;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.modal-close:hover {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+.modal-close svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Modal Body */
+.modal-body {
+    padding: 24px;
+}
+
+.modal-form-group {
+    margin-bottom: 20px;
+}
+
+.modal-form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #e2e8f0;
+}
+
+.modal-input-wrapper {
+    position: relative;
+}
+
+.modal-input {
+    width: 100%;
+    padding: 12px 16px;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(59, 130, 246, 0.5);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.modal-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    background: rgba(15, 23, 42, 0.8);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.modal-input::placeholder {
+    color: #64748b;
+}
+
+/* Autocomplete Dropdown */
+.autocomplete-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 4px;
+    background: rgba(15, 23, 42, 0.98);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    z-index: 10;
+    display: none;
+}
+
+.autocomplete-dropdown.show {
+    display: block;
+}
+
+.autocomplete-item {
+    padding: 10px 16px;
+    color: #e2e8f0;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.autocomplete-item:hover {
+    background: rgba(59, 130, 246, 0.2);
+}
+
+.autocomplete-item svg {
+    width: 16px;
+    height: 16px;
+    color: #60a5fa;
+}
+
+.autocomplete-empty {
+    padding: 16px;
+    text-align: center;
+    color: #64748b;
+    font-size: 13px;
+}
+
+/* Modal Footer */
+.modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.modal-btn {
+    padding: 10px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.modal-btn-cancel {
+    background: transparent;
+    color: #94a3b8;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-btn-cancel:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #e2e8f0;
+}
+
+.modal-btn-primary {
+    background: #3b82f6;
+    color: #fff;
+}
+
+.modal-btn-primary:hover {
+    background: #2563eb;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.modal-btn-primary:disabled {
+    background: #475569;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* ========== FILE EDITOR MODE ========== */
+
+/* File Editor Container (replaces file manager when editing) */
+.file-editor-container {
+    display: none;
+    flex-direction: column;
+    height: calc(100vh - 80px);
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 20px;
+}
+
+.file-editor-container.active {
+    display: flex;
+}
+
+/* Editor Header */
+.file-editor-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    background: rgba(30, 41, 59, 0.95);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.file-editor-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+}
+
+.file-editor-title svg {
+    width: 20px;
+    height: 20px;
+    color: #60a5fa;
+}
+
+.file-editor-title h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #e2e8f0;
+    margin: 0;
+}
+
+.file-editor-path {
+    font-size: 13px;
+    color: #94a3b8;
+    margin-left: 8px;
+}
+
+.file-editor-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.file-editor-btn {
+    padding: 8px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.file-editor-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+.file-editor-btn-cancel {
+    background: transparent;
+    color: #94a3b8;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.file-editor-btn-cancel:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #e2e8f0;
+}
+
+.file-editor-btn-save {
+    background: #10b981;
+    color: #fff;
+}
+
+.file-editor-btn-save:hover {
+    background: #059669;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.file-editor-btn-save:disabled {
+    background: #475569;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Editor Body */
+.file-editor-body {
+    flex: 1;
+    padding: 20px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.file-editor-textarea {
+    flex: 1;
+    width: 100%;
+    padding: 16px;
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: #e2e8f0;
+    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    resize: none;
+    outline: none;
+    transition: all 0.3s;
+}
+
+.file-editor-textarea:focus {
+    border-color: #60a5fa;
+    background: rgba(15, 23, 42, 0.95);
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+}
+
+.file-editor-textarea::selection {
+    background: rgba(96, 165, 250, 0.3);
+}
+
+/* Editor Loading State */
+.file-editor-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #94a3b8;
+}
+
+.file-editor-loading svg {
+    width: 32px;
+    height: 32px;
+    animation: spin 1s linear infinite;
+}
+
+/* Editor Info (file size, line count) */
+.file-editor-info {
+    margin-top: 12px;
+    padding: 12px 16px;
+    background: rgba(30, 41, 59, 0.5);
+    border-radius: 8px;
+    display: flex;
+    gap: 24px;
+    font-size: 13px;
+    color: #94a3b8;
+}
+
+.file-editor-info-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.file-editor-info-item svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* ========== RESPONSIVE - MOBILE ========== */
+@media (max-width: 768px) {
+    .file-manager-container {
+        margin: 12px;
+        height: calc(100vh - 100px);
+    }
+
+    .file-manager-header {
+        flex-direction: column;
+        gap: 12px;
+        padding: 12px;
+    }
+
+    .file-manager-header-left {
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .file-manager-header-right {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .clipboard-buttons {
+        width: 100%;
+    }
+
+    .breadcrumb-container {
+        width: 100%;
+        padding-left: 0;
+        border-left: none;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding-top: 12px;
+    }
+
+    .file-item {
+        padding: 12px;
+    }
+
+    .file-item-modified {
+        display: none;
+    }
+
+    .file-item-size {
+        width: 80px;
+        margin-right: 12px;
+    }
+
+    .file-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 12px;
+    }
+
+    .file-grid-item {
+        padding: 16px 12px;
+    }
+
+    .file-grid-item-icon {
+        width: 36px;
+        height: 36px;
+        margin-bottom: 8px;
+    }
+
+    .file-grid-item-name {
+        font-size: 12px;
+    }
+
+    .floating-actions {
+        bottom: 20px;
+        right: 20px;
+        gap: 8px;
+    }
+
+    .floating-action-btn {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+    }
+
+    .floating-action-btn svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    .action-btn {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+
+    /* File Editor Responsive */
+    .file-editor-container {
+        margin: 12px;
+        height: calc(100vh - 100px);
+    }
+
+    .file-editor-header {
+        flex-direction: column;
+        gap: 12px;
+        padding: 12px;
+    }
+
+    .file-editor-title {
+        width: 100%;
+    }
+
+    .file-editor-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .file-editor-body {
+        padding: 12px;
+    }
+
+    .file-editor-textarea {
+        font-size: 13px;
+        padding: 12px;
+    }
+
+    .file-editor-btn {
+        padding: 8px 16px;
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .file-manager-container {
+        margin: 8px;
+        border-radius: 8px;
+    }
+
+    .file-manager-header {
+        padding: 10px;
+    }
+
+    .file-list-container {
+        padding: 12px;
+    }
+
+    .file-item-name {
+        font-size: 13px;
+    }
+
+    .file-item-size {
+        font-size: 12px;
+    }
+
+    .action-btn {
+        padding: 6px 10px;
+        font-size: 11px;
+    }
+
+    .action-btn span {
+        display: none;
+    }
+
+    .select-all-label {
+        display: none;
+    }
+
+    .upload-panel {
+        width: calc(100% - 24px);
+        right: 12px;
+        bottom: 12px;
+    }
+
+    .drag-drop-box {
+        padding: 40px 30px;
+    }
+
+    .drag-drop-box svg {
+        width: 48px;
+        height: 48px;
+    }
+
+    .drag-drop-box p {
+        font-size: 16px;
+    }
+
+    /* File Editor Responsive */
+    .file-editor-container {
+        margin: 8px;
+        border-radius: 8px;
+    }
+
+    .file-editor-header {
+        padding: 10px;
+    }
+
+    .file-editor-body {
+        padding: 10px;
+    }
+
+    .file-editor-textarea {
+        font-size: 12px;
+        padding: 10px;
+    }
+
+    .file-editor-path {
+        display: none;
+    }
+
+    .file-editor-info {
+        flex-direction: column;
+        gap: 8px;
+    }
+}

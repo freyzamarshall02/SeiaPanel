@@ -1,0 +1,106 @@
+/* ========================================
+   AUTH.CSS - Login & Register Pages
+   ======================================== */
+
+/* ========== AUTH CONTAINER ========== */
+.auth-container {
+    width: 100%;
+    max-width: 480px;
+    padding: 20px;
+}
+
+.auth-card {
+    background: rgba(30, 41, 59, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 40px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+/* ========== AUTH HEADER ========== */
+.auth-icon {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #60a5fa;
+}
+
+.auth-title {
+    font-size: 24px;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.auth-subtitle {
+    font-size: 20px;
+    font-weight: 500;
+    text-align: center;
+    margin-bottom: 8px;
+    color: #e2e8f0;
+}
+
+.auth-description {
+    font-size: 14px;
+    text-align: center;
+    color: #94a3b8;
+    margin-bottom: 30px;
+}
+
+/* ========== AUTH FORM ========== */
+.auth-form {
+    margin-bottom: 20px;
+}
+
+/* ========== AUTH FOOTER ========== */
+.auth-footer {
+    text-align: center;
+    font-size: 14px;
+    color: #94a3b8;
+}
+
+.auth-footer a {
+    color: #60a5fa;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.auth-footer a:hover {
+    text-decoration: underline;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+    .auth-container {
+        padding: 12px;
+    }
+
+    .auth-card {
+        padding: 24px;
+    }
+
+    .auth-title {
+        font-size: 20px;
+    }
+
+    .auth-subtitle {
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .auth-card {
+        padding: 20px;
+    }
+
+    .auth-title {
+        font-size: 18px;
+    }
+
+    .auth-subtitle {
+        font-size: 16px;
+    }
+
+    .auth-description {
+        font-size: 13px;
+    }
+}
