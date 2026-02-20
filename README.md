@@ -93,3 +93,5 @@ After logging in, go to **Settings** to set your server folder path. Seia Panel 
 - **Database** — SQLite via GORM
 - **Scheduler** — robfig/cron
 - **Frontend** — Vanilla JS (modular), CSS
+
+## This Code Created Entirely by Claude AI
