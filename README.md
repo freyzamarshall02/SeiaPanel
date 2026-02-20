@@ -15,7 +15,7 @@ A lightweight, self-hosted web panel for managing Minecraft servers. Built with 
 ## Requirements
 
 - Linux (uses `/proc` filesystem for stats)
-- Go 1.21+ (for building from source)
+- Go 1.21+ 
 
 ## Installation (VPS)
 
@@ -58,7 +58,7 @@ cd SeiaPanel
 # Install dependencies
 go mod tidy
 
-# Build release archives
+# Run Panel
 go run main.go
 ```
 
