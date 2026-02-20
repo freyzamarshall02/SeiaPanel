@@ -94,4 +94,4 @@ After logging in, go to **Settings** to set your server folder path. Seia Panel 
 - **Scheduler** — robfig/cron
 - **Frontend** — Vanilla JS (modular), CSS
 
-## This Code Created Entirely by Claude AI
+## This Project Created Entirely by Claude AI
