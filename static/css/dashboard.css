@@ -1,0 +1,193 @@
+/* ========================================
+   DASHBOARD.CSS - Dashboard Layout & Navigation
+   ======================================== */
+
+/* ========== SIDEBAR ========== */
+.sidebar {
+    width: 180px;
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-menu {
+    flex: 1;
+    padding: 20px 0;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    color: #94a3b8;
+    text-decoration: none;
+    transition: all 0.3s;
+    border-left: 3px solid transparent;
+}
+
+.menu-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #e2e8f0;
+}
+
+.menu-item.active {
+    background: rgba(59, 130, 246, 0.2);
+    border-left-color: #3b82f6;
+    color: #60a5fa;
+}
+
+.menu-item span {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.sidebar-user {
+    padding: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #e2e8f0;
+}
+
+.sidebar-user span {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* ========== MAIN CONTENT ========== */
+.main-content {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.content-wrapper {
+    padding: 40px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.page-title {
+    font-size: 32px;
+    font-weight: 600;
+    margin-bottom: 30px;
+}
+
+/* ========== SERVER HEADER ========== */
+.server-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.server-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.server-title h1 {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.server-controls {
+    display: flex;
+    gap: 12px;
+}
+
+.server-controls .btn {
+    padding: 10px 16px;
+    border-radius: 8px;
+}
+
+/* ========== RESPONSIVE - MOBILE ========== */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 60px;
+        flex-shrink: 0;
+    }
+
+    .sidebar-menu .menu-item span,
+    .sidebar-user span {
+        display: none;
+    }
+
+    .menu-item {
+        justify-content: center;
+        padding: 12px 10px;
+    }
+
+    .sidebar-user {
+        justify-content: center;
+        padding: 12px 10px;
+    }
+
+    .main-content {
+        flex: 1;
+        width: 100%;
+        height: 100vh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .content-wrapper {
+        padding: 20px;
+    }
+
+    .page-title {
+        font-size: 24px;
+    }
+
+    .server-header {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+        padding: 12px 16px;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    .server-controls {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .server-controls .btn {
+        padding: 10px 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .sidebar {
+        width: 50px;
+    }
+
+    .content-wrapper {
+        padding: 16px;
+    }
+
+    .page-title {
+        font-size: 20px;
+    }
+
+    .server-header {
+        padding: 10px 12px;
+    }
+
+    .server-controls .btn {
+        padding: 8px 12px;
+    }
+
+    .server-title h1 {
+        font-size: 20px;
+    }
+}

@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resource Monitor - Minecraft Server Controller</title>
+    <link rel="icon" type="image/x-icon" href="/static/images/favicon.ico">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="dashboard-page">
+    <div class="sidebar">
+        <div class="sidebar-menu">
+            <a href="/dashboard" class="menu-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+                <span>Home</span>
+            </a>
+            <a href="/account" class="menu-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                <span>Account</span>
+            </a>
+            <a href="/resource" class="menu-item active">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 20V10"></path>
+                    <path d="M12 20V4"></path>
+                    <path d="M6 20v-6"></path>
+                </svg>
+                <span>Resource</span>
+            </a>
+            <a href="/settings" class="menu-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M12 1v6m0 6v6m9-9h-6m-6 0H3"></path>
+                </svg>
+                <span>Settings</span>
+            </a>
+            <a href="/logout" class="menu-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                <span>Logout</span>
+            </a>
+        </div>
+        <div class="sidebar-user">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span>{{.User.Username}}</span>
+        </div>
+    </div>
+
+    <div class="main-content" style="overflow-y: auto; height: 100vh;">
+        <div class="content-wrapper">
+            <h1 class="page-title">Resource Monitor</h1>
+
+            {{if .Error}}
+                {{range .Error}}
+                    <div class="alert alert-error">{{.}}</div>
+                {{end}}
+            {{end}}
+
+            {{if .Success}}
+                {{range .Success}}
+                    <div class="alert alert-success">{{.}}</div>
+                {{end}}
+            {{end}}
+
+            <!-- CPU Section -->
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 20px;">
+                    <div>
+                        <h2 class="card-title" style="margin-bottom: 8px;">CPU</h2>
+                        <div id="cpuInfo" style="color: #94a3b8; font-size: 14px; line-height: 1.6;">
+                            <div id="cpuModel">Loading...</div>
+                            <div id="cpuCores">Cores: ...</div>
+                            <div id="cpuSpeed">Speed: ...</div>
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="color: #94a3b8; font-size: 14px; margin-bottom: 4px;">CPU USAGE</div>
+                        <div id="cpuUsageText" style="font-size: 28px; font-weight: 600; color: #60a5fa;">0%</div>
+                    </div>
+                </div>
+                <div style="height: 200px; position: relative;">
+                    <canvas id="cpuChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Memory Section -->
+            <div class="card" style="margin-top: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 20px;">
+                    <div>
+                        <h2 class="card-title" style="margin-bottom: 8px;">MEMORY</h2>
+                        <div style="color: #94a3b8; font-size: 14px; line-height: 1.6;">
+                            <div id="memoryTotal">Total Memory Usage: <span style="color: #e2e8f0;">Loading...</span></div>
+                            <div id="serverActive">Server Active: <span style="color: #e2e8f0;">0 Servers</span></div>
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="color: #94a3b8; font-size: 14px; margin-bottom: 4px;">MEMORY USAGE</div>
+                        <div id="memoryUsageText" style="font-size: 28px; font-weight: 600; color: #f59e0b;">0%</div>
+                    </div>
+                </div>
+                <div style="height: 200px; position: relative;">
+                    <canvas id="memoryChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Disk Section -->
+            <div class="card" style="margin-top: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 20px;">
+                    <div>
+                        <h2 class="card-title" style="margin-bottom: 8px;">DISK</h2>
+                        <div style="color: #94a3b8; font-size: 14px; line-height: 1.6;">
+                            <div id="diskTotal">Total Disk: <span style="color: #e2e8f0;">0 GB / 0 GB</span></div>
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="color: #94a3b8; font-size: 14px; margin-bottom: 4px;">DISK USAGE</div>
+                        <div id="diskUsageText" style="font-size: 28px; font-weight: 600; color: #ef4444;">0%</div>
+                    </div>
+                </div>
+                <div style="height: 200px; position: relative;">
+                    <canvas id="diskChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Chart.js configuration
+        Chart.defaults.color = '#94a3b8';
+        Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.1)';
+
+        // CPU Chart
+        const cpuCtx = document.getElementById('cpuChart').getContext('2d');
+        const cpuChart = new Chart(cpuCtx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'CPU Usage %',
+                    data: [],
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 0,
+                    pointHoverRadius: 4,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                interaction: {
+                    mode: 'nearest',
+                    axis: 'x',
+                    intersect: false
+                }
+            }
+        });
+
+        // Memory Chart
+        const memoryCtx = document.getElementById('memoryChart').getContext('2d');
+        const memoryChart = new Chart(memoryCtx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Memory Usage %',
+                    data: [],
+                    borderColor: '#f59e0b',
+                    backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 0,
+                    pointHoverRadius: 4,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                interaction: {
+                    mode: 'nearest',
+                    axis: 'x',
+                    intersect: false
+                }
+            }
+        });
+
+        // Disk Chart
+        const diskCtx = document.getElementById('diskChart').getContext('2d');
+        const diskChart = new Chart(diskCtx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Disk Usage %',
+                    data: [],
+                    borderColor: '#ef4444',
+                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 0,
+                    pointHoverRadius: 4,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                interaction: {
+                    mode: 'nearest',
+                    axis: 'x',
+                    intersect: false
+                }
+            }
+        });
+
+        // Data arrays to keep history
+        const maxDataPoints = 60; // Keep last 60 data points
+        let timeLabels = [];
+
+        // Update charts with new data
+        function updateCharts(data) {
+            const now = new Date();
+            const timeLabel = now.getHours().toString().padStart(2, '0') + ':' + 
+                             now.getMinutes().toString().padStart(2, '0') + ':' + 
+                             now.getSeconds().toString().padStart(2, '0');
+
+            // Add new time label
+            timeLabels.push(timeLabel);
+            if (timeLabels.length > maxDataPoints) {
+                timeLabels.shift();
+            }
+
+            // Update CPU chart
+            cpuChart.data.labels = timeLabels;
+            cpuChart.data.datasets[0].data.push(data.cpu.percent);
+            if (cpuChart.data.datasets[0].data.length > maxDataPoints) {
+                cpuChart.data.datasets[0].data.shift();
+            }
+            cpuChart.update('none');
+
+            // Update Memory chart
+            memoryChart.data.labels = timeLabels;
+            memoryChart.data.datasets[0].data.push(data.memory.used_percent);
+            if (memoryChart.data.datasets[0].data.length > maxDataPoints) {
+                memoryChart.data.datasets[0].data.shift();
+            }
+            memoryChart.update('none');
+
+            // Update Disk chart (static but shown as line)
+            diskChart.data.labels = timeLabels;
+            diskChart.data.datasets[0].data.push(data.disk.used_percent);
+            if (diskChart.data.datasets[0].data.length > maxDataPoints) {
+                diskChart.data.datasets[0].data.shift();
+            }
+            diskChart.update('none');
+
+            // Update text displays
+            document.getElementById('cpuUsageText').textContent = Math.round(data.cpu.percent) + '% / 100%';
+            document.getElementById('cpuModel').textContent = data.cpu.model;
+            document.getElementById('cpuCores').textContent = data.cpu.cores + ' Cores';
+            document.getElementById('cpuSpeed').textContent = data.cpu.speed;
+
+            document.getElementById('memoryUsageText').textContent = Math.round(data.memory.used_percent) + '% / 100%';
+            document.getElementById('memoryTotal').innerHTML = 
+                'Total Memory Usage: <span style="color: #e2e8f0;">' + 
+                data.memory.used_gb.toFixed(1) + ' GB / ' + data.memory.total_gb.toFixed(1) + ' GB</span>';
+            document.getElementById('serverActive').innerHTML = 
+                'Server Active: <span style="color: #e2e8f0;">' + 
+                data.servers.active + ' Servers</span>';
+
+            document.getElementById('diskUsageText').textContent = Math.round(data.disk.used_percent) + '% / 100%';
+            document.getElementById('diskTotal').innerHTML = 
+                'Total Disk: <span style="color: #e2e8f0;">' + 
+                data.disk.used_gb.toFixed(1) + ' GB / ' + data.disk.total_gb.toFixed(1) + ' GB</span>';
+        }
+
+        // Fetch stats from API
+        function fetchStats() {
+            fetch('/api/system/stats')
+                .then(response => response.json())
+                .then(data => {
+                    updateCharts(data);
+                })
+                .catch(error => {
+                    console.error('Failed to fetch stats:', error);
+                });
+        }
+
+        // Initial fetch
+        fetchStats();
+
+        // Update every 2 seconds
+        setInterval(fetchStats, 2000);
+    </script>
+    <script src="/static/js/utils/utils.js"></script>
+    <script src="/static/js/main/main.js"></script>
+</body>
+</html>

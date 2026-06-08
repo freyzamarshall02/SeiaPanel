@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Seia Panel</title>
+    <link rel="icon" type="image/x-icon" href="/static/images/favicon.ico">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <!-- Separated CSS files are imported via style.css -->
+</head>
+<body class="auth-page">
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-icon">
+                <img src="/static/images/logo.png" width="64" height="64" alt="Seia Panel Logo">
+            </div>
+            
+            <h1 class="auth-title">Seia Panel</h1>
+            <h2 class="auth-subtitle">Let's Have Setup</h2>
+            <p class="auth-description">Create your account to access the dashboard</p>
+
+            <!-- Alert container for dynamic messages -->
+            <div id="alertContainer"></div>
+
+            {{if .Error}}
+                {{range .Error}}
+                    <div class="alert alert-error">{{.}}</div>
+                {{end}}
+            {{end}}
+
+            <form id="registerForm" class="auth-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" placeholder="Enter username" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter password (min. 8 characters)" required minlength="8">
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm_password">Confirm Password</label>
+                    <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm password" required>
+                </div>
+
+                <button type="submit" id="registerBtn" class="btn btn-primary btn-block">CREATE ACCOUNT</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Load JavaScript modules -->
+    <script src="/static/js/utils/utils.js"></script>
+    <script src="/static/js/forms/forms.js"></script>
+    <script src="/static/js/main/main.js"></script>
+</body>
+</html>

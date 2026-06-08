@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Seia Panel</title>
+    <link rel="icon" type="image/x-icon" href="/static/images/favicon.ico">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <!-- Separated CSS files are imported via style.css -->
+</head>
+<body class="auth-page">
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-icon">
+                <img src="/static/images/logo.png" width="64" height="64" alt="Seia Panel Logo">
+            </div>
+            
+            <h1 class="auth-title">Seia Panel</h1>
+            <h2 class="auth-subtitle">Login to Continue</h2>
+            <p class="auth-description">Enter your credentials to access the dashboard</p>
+
+            <!-- Alert container for dynamic messages -->
+            <div id="alertContainer"></div>
+
+            {{if .Error}}
+                {{range .Error}}
+                    <div class="alert alert-error">{{.}}</div>
+                {{end}}
+            {{end}}
+
+            {{if .Success}}
+                {{range .Success}}
+                    <div class="alert alert-success">{{.}}</div>
+                {{end}}
+            {{end}}
+
+            <form id="loginForm" class="auth-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" placeholder="Enter username" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter password" required>
+                </div>
+
+                <button type="submit" id="loginBtn" class="btn btn-primary btn-block">LOGIN</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Load JavaScript modules -->
+    <script src="/static/js/utils/utils.js"></script>
+    <script src="/static/js/forms/forms.js"></script>
+    <script src="/static/js/main/main.js"></script>
+</body>
+</html>
