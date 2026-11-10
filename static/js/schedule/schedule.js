@@ -7,7 +7,8 @@ const ScheduleManager = {
         serverName: '',
         schedules: [],
         isLoading: false,
-        currentEditingSchedule: null
+        currentEditingSchedule: null,
+        pendingDeleteId: null
     },
 
     /**
@@ -27,6 +28,55 @@ const ScheduleManager = {
         if (createBtn) {
             createBtn.addEventListener('click', () => this.openCreateModal());
         }
+
+        // Delete confirm modal
+        const closeDeleteBtn  = document.getElementById('closeScheduleDeleteModal');
+        const cancelDeleteBtn = document.getElementById('cancelScheduleDelete');
+        const confirmDeleteBtn = document.getElementById('confirmScheduleDelete');
+        const deleteModal     = document.getElementById('scheduleDeleteModal');
+
+        if (closeDeleteBtn)  closeDeleteBtn.addEventListener('click',  () => this.closeDeleteModal());
+        if (cancelDeleteBtn) cancelDeleteBtn.addEventListener('click', () => this.closeDeleteModal());
+        if (confirmDeleteBtn) confirmDeleteBtn.addEventListener('click', () => this.performDelete());
+        if (deleteModal) {
+            deleteModal.addEventListener('click', (e) => {
+                if (e.target === deleteModal) this.closeDeleteModal();
+            });
+        }
+    },
+
+    /**
+     * Open delete confirmation modal
+     */
+    openDeleteModal(scheduleId, scheduleName) {
+        this.state.pendingDeleteId = scheduleId;
+        const msg = document.getElementById('scheduleDeleteMessage');
+        const modal = document.getElementById('scheduleDeleteModal');
+        if (msg) msg.innerHTML = `Are you sure you want to delete <strong style="color:#e2e8f0;">${this.escapeHtml(scheduleName)}</strong>?<br><span style="font-size:13px;color:#94a3b8;">This action cannot be undone.</span>`;
+        if (modal) {
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+    },
+
+    /**
+     * Close delete confirmation modal
+     */
+    closeDeleteModal() {
+        const modal = document.getElementById('scheduleDeleteModal');
+        if (modal) modal.classList.remove('show');
+        document.body.style.overflow = '';
+        this.state.pendingDeleteId = null;
+    },
+
+    /**
+     * Perform the confirmed delete
+     */
+    async performDelete() {
+        const scheduleId = this.state.pendingDeleteId;
+        if (!scheduleId) return;
+        this.closeDeleteModal();
+        await this._doDeleteSchedule(scheduleId);
     },
 
     /**
@@ -143,7 +193,8 @@ const ScheduleManager = {
         const toggleInput = toggleLabel.querySelector('input');
         toggleInput.addEventListener('change', (e) => {
             e.stopPropagation();
-            this.toggleSchedule(schedule.id, schedule.enabled);
+            const desiredState = e.target.checked;
+            this.toggleSchedule(schedule.id, desiredState, toggleInput);
         });
 
         // Play button (manual execution)
@@ -323,13 +374,16 @@ const ScheduleManager = {
     },
 
     /**
-     * Delete schedule
+     * Delete schedule - opens confirm modal
      */
     async deleteSchedule(scheduleId, scheduleName) {
-        if (!confirm(`Are you sure you want to delete schedule "${scheduleName}"?`)) {
-            return;
-        }
+        this.openDeleteModal(scheduleId, scheduleName);
+    },
 
+    /**
+     * Actually perform the DELETE request
+     */
+    async _doDeleteSchedule(scheduleId) {
         try {
             const response = await fetch(
                 `/server/${this.state.serverName}/schedule/${scheduleId}/delete`,
@@ -358,39 +412,50 @@ const ScheduleManager = {
     /**
      * Toggle schedule enabled/disabled
      */
-    async toggleSchedule(scheduleId, currentEnabled) {
+    async toggleSchedule(scheduleId, desiredEnabled, toggleInput) {
+        console.log('[Toggle] scheduleId:', scheduleId, '| desiredEnabled:', desiredEnabled);
+
+        // Optimistically disable the input while request is in flight
+        if (toggleInput) toggleInput.disabled = true;
+
         try {
+            const body = new URLSearchParams();
+            body.append('enabled', desiredEnabled ? 'true' : 'false');
+
+            console.log('[Toggle] Sending body:', body.toString());
+
             const response = await fetch(
                 `/server/${this.state.serverName}/schedule/${scheduleId}/toggle`,
                 {
-                    method: 'POST'
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: body
                 }
             );
 
             const data = await response.json();
+            console.log('[Toggle] Response:', data);
 
             if (data.success) {
-                console.log('Schedule toggled successfully');
-                const newStatus = data.enabled ? 'enabled' : 'disabled';
-                this.showSuccess(`Schedule ${newStatus} successfully`);
-                
+                // Sync checkbox to actual server state
+                if (toggleInput) toggleInput.checked = data.enabled;
+                console.log('[Toggle] Checkbox set to:', data.enabled);
+
                 // Update local state
                 const schedule = this.state.schedules.find(s => s.id === scheduleId);
-                if (schedule) {
-                    schedule.enabled = data.enabled;
-                }
+                if (schedule) schedule.enabled = data.enabled;
             } else {
                 this.showError(data.error || 'Failed to toggle schedule');
-                
-                // Reload to revert toggle
-                await this.loadSchedules();
+                // Revert checkbox to previous state
+                if (toggleInput) toggleInput.checked = !desiredEnabled;
             }
         } catch (error) {
             console.error('Failed to toggle schedule:', error);
             this.showError('Failed to toggle schedule');
-            
-            // Reload to revert toggle
-            await this.loadSchedules();
+            // Revert checkbox to previous state
+            if (toggleInput) toggleInput.checked = !desiredEnabled;
+        } finally {
+            if (toggleInput) toggleInput.disabled = false;
         }
     },
 

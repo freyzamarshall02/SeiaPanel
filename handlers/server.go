@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"html/template"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -49,21 +48,16 @@ func Dashboard(w http.ResponseWriter, r *http.Request) {
 
 	session, _ := config.GetSessionStore().Get(r, "auth-session")
 
-	tmpl, err := template.ParseFiles("templates/dashboard.html")
-	if err != nil {
-		http.Error(w, "Error loading template", http.StatusInternalServerError)
-		return
-	}
-
 	data := map[string]interface{}{
-		"User":    user,
-		"Servers": servers,
-		"Success": session.Flashes("success"),
-		"Error":   session.Flashes("error"),
+		"User":       user,
+		"Servers":    servers,
+		"Success":    session.Flashes("success"),
+		"Error":      session.Flashes("error"),
+		"ActivePage": "dashboard",
 	}
 	session.Save(r, w)
 
-	tmpl.Execute(w, data)
+	RenderPage(w, "base", "dashboard", data)
 }
 
 // scanAndSyncServers scans the server folder and syncs with database
@@ -183,21 +177,16 @@ func ServerConsolePage(w http.ResponseWriter, r *http.Request) {
 
 	session, _ := config.GetSessionStore().Get(r, "auth-session")
 
-	tmpl, err := template.ParseFiles("templates/console.html")
-	if err != nil {
-		http.Error(w, "Error loading template", http.StatusInternalServerError)
-		return
-	}
-
 	data := map[string]interface{}{
-		"User":    user,
-		"Server":  server,
-		"Success": session.Flashes("success"),
-		"Error":   session.Flashes("error"),
+		"User":       user,
+		"Server":     server,
+		"Success":    session.Flashes("success"),
+		"Error":      session.Flashes("error"),
+		"ActivePage": "console",
 	}
 	session.Save(r, w)
 
-	tmpl.Execute(w, data)
+	RenderPage(w, "base", "console", data)
 }
 
 // StartServer handles starting a server
@@ -416,21 +405,16 @@ func StartupPage(w http.ResponseWriter, r *http.Request) {
 
 	session, _ := config.GetSessionStore().Get(r, "auth-session")
 
-	tmpl, err := template.ParseFiles("templates/startup.html")
-	if err != nil {
-		http.Error(w, "Error loading template", http.StatusInternalServerError)
-		return
-	}
-
 	data := map[string]interface{}{
-		"User":    user,
-		"Server":  server,
-		"Success": session.Flashes("success"),
-		"Error":   session.Flashes("error"),
+		"User":       user,
+		"Server":     server,
+		"Success":    session.Flashes("success"),
+		"Error":      session.Flashes("error"),
+		"ActivePage": "startup",
 	}
 	session.Save(r, w)
 
-	tmpl.Execute(w, data)
+	RenderPage(w, "base", "startup", data)
 }
 
 // UpdateStartup handles updating the startup command - AJAX JSON response

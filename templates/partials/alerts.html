@@ -1,0 +1,12 @@
+{{define "alerts"}}
+{{if .Error}}
+    {{range .Error}}
+        <div class="alert alert-error">{{.}}</div>
+    {{end}}
+{{end}}
+{{if .Success}}
+    {{range .Success}}
+        <div class="alert alert-success">{{.}}</div>
+    {{end}}
+{{end}}
+{{end}}

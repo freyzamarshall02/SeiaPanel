@@ -68,7 +68,7 @@ func (s *ScheduleService) LoadAllSchedules() error {
 
 // AddSchedule adds a schedule to the cron scheduler
 func (s *ScheduleService) AddSchedule(schedule models.Schedule) error {
-	if !schedule.Enabled {
+	if !schedule.IsEnabled() {
 		return nil // Don't add disabled schedules
 	}
 
@@ -132,7 +132,7 @@ func (s *ScheduleService) UpdateSchedule(schedule models.Schedule) error {
 	}
 
 	// Add new schedule if enabled
-	if schedule.Enabled {
+	if schedule.IsEnabled() {
 		return s.AddSchedule(schedule)
 	}
 

@@ -21,6 +21,12 @@
 /* Files pages - File Manager */
 @import url('files.css');
 
+/* Backups pages - Backup management */
+@import url('backups.css');
+
+/* Schedule pages - Schedule management */
+@import url('schedule.css');
+
 /* ========================================
    Additional custom styles can go here
    ======================================== */

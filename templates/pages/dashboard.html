@@ -1,0 +1,29 @@
+{{template "base" .}}
+
+{{define "title"}}Dashboard - Minecraft Server Controller{{end}}
+
+{{define "sidebar_menu"}}{{template "sidebar_main" .}}{{end}}
+
+{{define "content"}}
+{{if .Servers}}
+    <div class="server-grid">
+        {{range .Servers}}
+            <a href="/server/{{.Name}}" class="server-card {{if eq .Status "online"}}server-online{{else}}server-offline{{end}}">
+                <div class="server-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                        <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                        <line x1="6" y1="6" x2="6.01" y2="6"></line>
+                        <line x1="6" y1="18" x2="6.01" y2="18"></line>
+                    </svg>
+                </div>
+                <h3 class="server-name">{{.Name}}</h3>
+            </a>
+        {{end}}
+    </div>
+{{else}}
+    <div class="empty-state">
+        <p>No servers found. Please configure your server folder path in Settings.</p>
+    </div>
+{{end}}
+{{end}}

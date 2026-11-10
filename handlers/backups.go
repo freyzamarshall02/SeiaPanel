@@ -3,7 +3,6 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
-	"html/template"
 	"io"
 	"net/http"
 	"os"
@@ -34,18 +33,13 @@ func BackupsPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tmpl, err := template.ParseFiles("templates/backups.html")
-	if err != nil {
-		http.Error(w, "Error loading template", http.StatusInternalServerError)
-		return
-	}
-
 	data := map[string]interface{}{
-		"User":   user,
-		"Server": server,
+		"User":       user,
+		"Server":     server,
+		"ActivePage": "backups",
 	}
 
-	tmpl.Execute(w, data)
+	RenderPage(w, "base", "backups", data)
 }
 
 // GetBackupSettings returns the backup settings for a server

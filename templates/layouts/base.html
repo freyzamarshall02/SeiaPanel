@@ -1,0 +1,64 @@
+{{define "base"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {{template "head" .}}
+    {{block "extra_head" .}}{{end}}
+</head>
+<body class="dashboard-page">
+    <div class="sidebar">
+        <div class="sidebar-menu">
+            {{block "sidebar_menu" .}}{{end}}
+        </div>
+        {{template "sidebar_user" .}}
+    </div>
+
+    <div class="main-content" {{block "main_attrs" .}}{{end}}>
+        {{block "main_body" .}}
+        <div class="content-wrapper">
+            {{template "alerts" .}}
+            {{block "content" .}}{{end}}
+        </div>
+        {{end}}
+    </div>
+
+    {{template "scripts" .}}
+    {{block "extra_scripts" .}}{{end}}
+
+    <!-- Logout Confirmation Modal (global, direct body child) -->
+    <div class="modal-overlay" id="logoutConfirmModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Logout</h3>
+                <button class="modal-close" onclick="closeLogoutModal()">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p style="color:#cbd5e1;margin:0;">Are you sure you want to logout?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="modal-btn modal-btn-cancel" onclick="closeLogoutModal()">Cancel</button>
+                <a href="/logout" class="modal-btn modal-btn-primary">Yes, Logout</a>
+            </div>
+        </div>
+    </div>
+    <script>
+    function openLogoutModal() {
+        document.getElementById('logoutConfirmModal').classList.add('show');
+    }
+    function closeLogoutModal() {
+        document.getElementById('logoutConfirmModal').classList.remove('show');
+    }
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeLogoutModal();
+    });
+    document.getElementById('logoutConfirmModal').addEventListener('click', function(e) {
+        if (e.target === this) closeLogoutModal();
+    });
+    </script>
+</body>
+</html>
+{{end}}

@@ -2,6 +2,10 @@
    CONSOLE.JS - Console Page Functionality
    ======================================== */
 
+// Maximum number of log lines to keep in the DOM at once.
+// Oldest lines are pruned when this limit is exceeded.
+const MAX_CONSOLE_LINES = 500;
+
 // ========== CONSOLE WEBSOCKET ==========
 
 /**
@@ -141,6 +145,17 @@ const LOG_LEVEL_CLASS_MAP = {
  * @param {HTMLElement} consoleEl - Console output container
  * @param {string} text - Raw console text, possibly containing ANSI SGR escapes
  */
+// Debounced scroll: fires once after messages stop arriving for 50ms.
+// This prevents the visible top→bottom scroll during the initial log replay burst.
+let _scrollTimer = null;
+function scrollConsoleToBottom(consoleEl) {
+    if (_scrollTimer) clearTimeout(_scrollTimer);
+    _scrollTimer = setTimeout(function() {
+        consoleEl.scrollTop = consoleEl.scrollHeight;
+        _scrollTimer = null;
+    }, 50);
+}
+
 function appendConsoleLine(consoleEl, text) {
     const line = document.createElement('div');
     line.className = 'console-line';
@@ -152,7 +167,13 @@ function appendConsoleLine(consoleEl, text) {
 
     renderAnsiText(line, text);
     consoleEl.appendChild(line);
-    consoleEl.scrollTop = consoleEl.scrollHeight;
+
+    // Prune oldest lines if we exceed the cap
+    while (consoleEl.childElementCount > MAX_CONSOLE_LINES) {
+        consoleEl.removeChild(consoleEl.firstChild);
+    }
+
+    scrollConsoleToBottom(consoleEl);
 }
 
 /**
@@ -205,21 +226,59 @@ function createDefaultAnsiStyle() {
     };
 }
 
+// URL pattern used to detect clickable links in console output
+const URL_PATTERN = /https?:\/\/[^\s\u0000-\u001f\u007f<>"]+/g;
+
 function appendStyledText(target, text, style) {
     if (!text) return;
 
-    const span = document.createElement('span');
-    span.textContent = text;
+    // Build an inline CSS string from current style so we can apply it to
+    // every node (plain text spans AND anchor elements) consistently.
+    const cssProps = [];
+    if (style.color) cssProps.push('color:' + style.color);
+    if (style.backgroundColor) cssProps.push('background-color:' + style.backgroundColor);
+    if (style.bold) cssProps.push('font-weight:700');
+    if (style.dim) cssProps.push('opacity:0.7');
+    if (style.italic) cssProps.push('font-style:italic');
+    if (style.underline || style.textDecoration) {
+        cssProps.push('text-decoration:' + (style.textDecoration || 'underline'));
+    }
+    const cssText = cssProps.join(';');
 
-    if (style.color) span.style.color = style.color;
-    if (style.backgroundColor) span.style.backgroundColor = style.backgroundColor;
-    if (style.bold) span.style.fontWeight = '700';
-    if (style.dim) span.style.opacity = '0.7';
-    if (style.italic) span.style.fontStyle = 'italic';
-    if (style.underline) span.style.textDecoration = 'underline';
-    if (style.textDecoration) span.style.textDecoration = style.textDecoration;
+    // Split the text around URLs so we can render each URL as an <a> element.
+    URL_PATTERN.lastIndex = 0;
+    let lastIndex = 0;
+    let match;
 
-    target.appendChild(span);
+    while ((match = URL_PATTERN.exec(text)) !== null) {
+        // Plain text before the URL
+        if (match.index > lastIndex) {
+            const span = document.createElement('span');
+            span.textContent = text.slice(lastIndex, match.index);
+            if (cssText) span.style.cssText = cssText;
+            target.appendChild(span);
+        }
+
+        // The URL itself — render as a clickable link
+        const a = document.createElement('a');
+        a.href = match[0];
+        a.textContent = match[0];
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        a.className = 'console-link';
+        if (cssText) a.style.cssText = cssText;
+        target.appendChild(a);
+
+        lastIndex = URL_PATTERN.lastIndex;
+    }
+
+    // Any remaining plain text after the last URL
+    if (lastIndex < text.length) {
+        const span = document.createElement('span');
+        span.textContent = text.slice(lastIndex);
+        if (cssText) span.style.cssText = cssText;
+        target.appendChild(span);
+    }
 }
 
 function applyMinecraftCode(currentStyle, rawCode) {
@@ -380,21 +439,13 @@ function initCommandHistory(inputElement) {
 // ========== CONSOLE AUTO-SCROLL ==========
 
 /**
- * Auto-scroll console to bottom when new content arrives
+ * Scroll the console to the bottom immediately on page load.
+ * Live lines are scrolled per-append in appendConsoleLine.
  */
 function initConsoleAutoScroll() {
     const consoleOutput = document.getElementById('console');
     if (!consoleOutput) return;
-
-    // Keep console scrolled to bottom
-    const observer = new MutationObserver(function() {
-        consoleOutput.scrollTop = consoleOutput.scrollHeight;
-    });
-    
-    observer.observe(consoleOutput, {
-        childList: true,
-        subtree: true
-    });
+    consoleOutput.scrollTop = consoleOutput.scrollHeight;
 }
 
 // ========== UPTIME TRACKER ==========
@@ -494,6 +545,8 @@ function startStatsPolling(serverName, interval = 3000) {
                         memoryEl.textContent = '-';
                     }
                 }
+                // Always update server size (directory exists regardless of running state)
+                updateServerSizeDisplay(data.dir_size_mb, data.dir_size_gb);
             })
             .catch(err => {
                 console.error('Failed to fetch stats:', err);
@@ -528,6 +581,26 @@ function updateMemoryDisplay(memoryMB, memoryGB) {
     } else {
         // Show in MB if < 1 GB
         memoryEl.textContent = memoryMB.toFixed(0) + ' MB';
+    }
+}
+
+/**
+ * Update server size display
+ * @param {number} sizeMB - Size in MB
+ * @param {number} sizeGB - Size in GB
+ */
+function updateServerSizeDisplay(sizeMB, sizeGB) {
+    const sizeEl = document.getElementById('server-size');
+    if (!sizeEl) return;
+
+    if (sizeGB >= 1) {
+        sizeEl.textContent = sizeGB.toFixed(2) + ' GB';
+    } else if (sizeMB >= 1) {
+        sizeEl.textContent = sizeMB.toFixed(2) + ' MB';
+    } else {
+        // Show in KB for very small servers
+        const sizeKB = sizeMB * 1024;
+        sizeEl.textContent = sizeKB.toFixed(0) + ' KB';
     }
 }
 

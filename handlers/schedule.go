@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
-	"html/template"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -31,18 +31,13 @@ func SchedulePage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tmpl, err := template.ParseFiles("templates/schedule.html")
-	if err != nil {
-		http.Error(w, "Error loading template", http.StatusInternalServerError)
-		return
-	}
-
 	data := map[string]interface{}{
-		"User":   user,
-		"Server": server,
+		"User":       user,
+		"Server":     server,
+		"ActivePage": "schedule",
 	}
 
-	tmpl.Execute(w, data)
+	RenderPage(w, "base", "schedule", data)
 }
 
 // ListSchedules returns all schedules for a server as JSON
@@ -424,7 +419,7 @@ func DeleteSchedule(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// ToggleSchedule toggles the enabled status of a schedule
+// ToggleSchedule sets the enabled status of a schedule based on the posted value
 func ToggleSchedule(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -476,12 +471,26 @@ func ToggleSchedule(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Toggle enabled status
-	if err := schedule.ToggleEnabled(); err != nil {
+	// Parse desired enabled state from request body
+	if err := r.ParseForm(); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"success": false,
+			"error":   "Error parsing form",
+		})
+		return
+	}
+	enabledStr := r.FormValue("enabled")
+	enabled := enabledStr == "true" || enabledStr == "1"
+
+	log.Printf("[ToggleSchedule] schedule_id=%d enabled_str=%q => enabled=%v", schedule.ID, enabledStr, enabled)
+
+	// Set enabled status explicitly
+	if err := schedule.SetEnabled(enabled); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]interface{}{
 			"success": false,
-			"error":   "Failed to toggle schedule",
+			"error":   "Failed to update schedule",
 		})
 		return
 	}
@@ -494,7 +503,7 @@ func ToggleSchedule(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"success":  true,
-		"message":  "Schedule toggled successfully",
+		"message":  "Schedule updated successfully",
 		"enabled":  schedule.Enabled,
 		"schedule": schedule,
 	})

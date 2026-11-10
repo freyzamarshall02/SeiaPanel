@@ -64,6 +64,19 @@
     color: #94a3b8;
 }
 
+/* Clickable URLs detected inside console output */
+.console-link {
+    color: #38bdf8;
+    text-decoration: underline;
+    cursor: pointer;
+    word-break: break-all;
+}
+
+.console-link:hover {
+    color: #7dd3fc;
+    text-decoration: underline;
+}
+
 /* ========== CONSOLE INPUT ========== */
 .console-input {
     display: flex;

@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"html/template"
 	"net/http"
 
 	"seiapanel/config"
@@ -22,20 +21,15 @@ func ResourcePage(w http.ResponseWriter, r *http.Request) {
 
 	session, _ := config.GetSessionStore().Get(r, "auth-session")
 
-	tmpl, err := template.ParseFiles("templates/resource.html")
-	if err != nil {
-		http.Error(w, "Error loading template", http.StatusInternalServerError)
-		return
-	}
-
 	data := map[string]interface{}{
-		"User":    user,
-		"Success": session.Flashes("success"),
-		"Error":   session.Flashes("error"),
+		"User":       user,
+		"Success":    session.Flashes("success"),
+		"Error":      session.Flashes("error"),
+		"ActivePage": "resource",
 	}
 	session.Save(r, w)
 
-	tmpl.Execute(w, data)
+	RenderPage(w, "base", "resource", data)
 }
 
 // GetSystemStats returns current system statistics as JSON

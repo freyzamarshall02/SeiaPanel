@@ -1,0 +1,29 @@
+{{template "base" .}}
+
+{{define "title"}}{{.Server.Name}} - Startup{{end}}
+
+{{define "sidebar_menu"}}{{template "sidebar_server" .}}{{end}}
+
+{{define "content"}}
+<h1 class="page-title">Startup</h1>
+
+<div class="card">
+    <h2 class="card-title">Startup Command</h2>
+    
+    <!-- Alert container for startup form -->
+    <div id="startupAlertContainer"></div>
+    
+    <form id="startupForm">
+        <div class="form-group">
+            <label for="command">Command</label>
+            <textarea id="command" name="command" rows="4" placeholder="java -Xmx2G -Xms2G -jar server.jar" required>{{.Server.StartupCommand}}</textarea>
+            <small class="form-help">Example: java -Xmx2G -Xms2G -jar server.jar</small>
+        </div>
+        <button type="submit" id="startupBtn" class="btn btn-primary">Update Startup</button>
+    </form>
+</div>
+{{end}}
+
+{{define "extra_scripts"}}
+<script src="/static/js/forms/forms.js"></script>
+{{end}}

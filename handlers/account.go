@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"html/template"
 	"net/http"
 
 	"seiapanel/config"
@@ -21,20 +20,15 @@ func AccountPage(w http.ResponseWriter, r *http.Request) {
 
 	session, _ := config.GetSessionStore().Get(r, "auth-session")
 
-	tmpl, err := template.ParseFiles("templates/account.html")
-	if err != nil {
-		http.Error(w, "Error loading template", http.StatusInternalServerError)
-		return
-	}
-
 	data := map[string]interface{}{
-		"User":    user,
-		"Success": session.Flashes("success"),
-		"Error":   session.Flashes("error"),
+		"User":       user,
+		"Success":    session.Flashes("success"),
+		"Error":      session.Flashes("error"),
+		"ActivePage": "account",
 	}
 	session.Save(r, w)
 
-	tmpl.Execute(w, data)
+	RenderPage(w, "base", "account", data)
 }
 
 // UpdateUsername handles username update - AJAX JSON response

@@ -38,6 +38,21 @@ func InitDatabase() {
 	}
 
 	log.Println("✅ Database tables migrated successfully")
+
+	// Reset any servers left as "online" from an unclean shutdown
+	// (power outage, kill -9, Ctrl+C, etc.). On startup no server
+	// process is actually running, so force all statuses to "offline".
+	result := DB.Model(&Server{}).
+		Where("status = ?", "online").
+		Updates(map[string]interface{}{
+			"status":     "offline",
+			"started_at": nil,
+		})
+	if result.Error != nil {
+		log.Printf("⚠️  Failed to reset stale server statuses: %v", result.Error)
+	} else if result.RowsAffected > 0 {
+		log.Printf("⚠️  Reset %d server(s) to 'offline' (unclean shutdown detected)", result.RowsAffected)
+	}
 }
 
 // GetDB returns the database instance

@@ -127,7 +127,6 @@ function initMobileNav() {
     sidebarLinks.forEach(function(link) {
         const item = document.createElement('a');
         item.className = 'mobile-nav-item';
-        item.href = link.href || '#';
         item.innerHTML = link.innerHTML;
 
         // Preserve active state
@@ -135,10 +134,23 @@ function initMobileNav() {
             item.classList.add('active');
         }
 
-        // Close drawer after navigating
-        item.addEventListener('click', function() {
-            closeMobileDrawer(overlay, drawer);
-        });
+        // If the sidebar item is a <button> (e.g. logout), it has no href —
+        // wire up its click handler directly instead.
+        if (link.tagName === 'BUTTON') {
+            item.href = '#';
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                closeMobileDrawer(overlay, drawer);
+                // Trigger the original button's click so its onclick fires
+                link.click();
+            });
+        } else {
+            item.href = link.href || '#';
+            // Close drawer after navigating
+            item.addEventListener('click', function() {
+                closeMobileDrawer(overlay, drawer);
+            });
+        }
 
         drawer.appendChild(item);
     });
@@ -183,9 +195,12 @@ function closeMobileDrawer(overlay, drawer) {
 function initLogoutConfirmation() {
     const logoutLinks = document.querySelectorAll('a[href="/logout"]');
     logoutLinks.forEach(function(link) {
+        // Skip the "Yes, Logout" link inside the modal itself
+        if (link.closest('#logoutConfirmModal')) return;
         link.addEventListener('click', function(e) {
-            if (!confirm('Are you sure you want to logout?')) {
-                e.preventDefault();
+            e.preventDefault();
+            if (typeof openLogoutModal === 'function') {
+                openLogoutModal();
             }
         });
     });
@@ -240,6 +255,9 @@ function initConsolePage() {
         });
     }
 
+    // Always poll stats so Server Size shows even when server is offline
+    statsPoller = startStatsPolling(serverName);
+
     if (serverStatus === 'online') {
         ws = initConsoleWebSocket(
             serverName,
@@ -252,10 +270,11 @@ function initConsolePage() {
                 setServerOffline();
                 if (uptimeTracker) { uptimeTracker.stop(); uptimeTracker = null; }
                 if (statsPoller)   { statsPoller.stop();   statsPoller   = null; }
+                // Restart polling so Server Size stays updated while offline
+                statsPoller = startStatsPolling(serverName);
             }
         );
         uptimeTracker = initUptimeTracker();
-        statsPoller   = startStatsPolling(serverName);
     }
 
     const startBtn   = document.getElementById('startBtn');

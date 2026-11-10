@@ -7,7 +7,6 @@ import (
 	"crypto/rand"
 	"encoding/json"
 	"fmt"
-	"html/template"
 	"io"
 	"io/ioutil"
 	"math/big"
@@ -58,18 +57,13 @@ func FilesPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tmpl, err := template.ParseFiles("templates/files.html")
-	if err != nil {
-		http.Error(w, "Error loading template", http.StatusInternalServerError)
-		return
-	}
-
 	data := map[string]interface{}{
-		"User":   user,
-		"Server": server,
+		"User":       user,
+		"Server":     server,
+		"ActivePage": "files",
 	}
 
-	tmpl.Execute(w, data)
+	RenderPage(w, "base", "files", data)
 }
 
 // ListFiles lists all files and directories in the current path

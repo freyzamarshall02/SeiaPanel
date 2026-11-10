@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"html/template"
 	"net/http"
 
 	"seiapanel/config"
@@ -28,19 +27,13 @@ func LoginPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tmpl, err := template.ParseFiles("templates/login.html")
-	if err != nil {
-		http.Error(w, "Error loading template", http.StatusInternalServerError)
-		return
-	}
-
 	data := map[string]interface{}{
 		"Error":   session.Flashes("error"),
 		"Success": session.Flashes("success"),
 	}
 	session.Save(r, w)
 
-	tmpl.Execute(w, data)
+	RenderPage(w, "auth", "login", data)
 }
 
 // Login handles user login - AJAX JSON response
@@ -104,18 +97,12 @@ func RegisterPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tmpl, err := template.ParseFiles("templates/register.html")
-	if err != nil {
-		http.Error(w, "Error loading template", http.StatusInternalServerError)
-		return
-	}
-
 	data := map[string]interface{}{
 		"Error": session.Flashes("error"),
 	}
 	session.Save(r, w)
 
-	tmpl.Execute(w, data)
+	RenderPage(w, "auth", "register", data)
 }
 
 // Register handles user registration - AJAX JSON response

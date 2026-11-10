@@ -1224,6 +1224,18 @@
     box-shadow: none;
 }
 
+.modal-btn-danger {
+    background: #ef4444;
+    color: #fff;
+}
+
+.modal-btn-danger:hover {
+    background: #dc2626;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+}
+
+
 /* ========== FILE EDITOR MODE ========== */
 
 /* File Editor Container (replaces file manager when editing) */
@@ -1335,37 +1347,169 @@
 /* Editor Body */
 .file-editor-body {
     flex: 1;
-    padding: 20px;
+    padding: 12px 16px 12px 16px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    gap: 8px;
 }
 
-.file-editor-textarea {
+/* ========== VS CODE STYLE CODE EDITOR ========== */
+.code-editor-wrapper {
     flex: 1;
+    display: flex;
+    background: #1e1e1e;
+    border: 1px solid #3c3c3c;
+    border-radius: 6px;
+    overflow: hidden;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    min-height: 0;
+}
+
+/* Line numbers gutter */
+.code-editor-gutter {
+    background: #1e1e1e;
+    border-right: 1px solid #3c3c3c;
+    min-width: 56px;
+    overflow: hidden;
+    user-select: none;
+    flex-shrink: 0;
+}
+
+.code-editor-line-numbers {
+    padding: 12px 10px 12px 8px;
+    text-align: right;
+    color: #858585;
+    font-size: 13px;
+    line-height: 1.6;
+    white-space: pre;
+}
+
+/* Scrollable content (highlight + textarea stacked) */
+.code-editor-content {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    min-width: 0;
+}
+
+/* Syntax highlight layer (read-only, behind textarea) */
+.code-editor-highlight {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 0;
+    padding: 12px 16px;
+    min-width: 100%;
+    min-height: 100%;
+    white-space: pre;
+    word-wrap: normal;
+    overflow: visible;
+    pointer-events: none;
+    font-family: inherit;
+    font-size: 13px;
+    line-height: 1.6;
+    color: transparent; /* text color comes from spans, background from here */
+    background: transparent;
+    border: none;
+    box-sizing: border-box;
+    tab-size: 4;
+    -moz-tab-size: 4;
+}
+
+.code-editor-highlight code {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    white-space: pre;
+    background: transparent;
+}
+
+/* Transparent textarea on top */
+.file-editor-textarea {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
-    padding: 16px;
-    background: rgba(15, 23, 42, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    color: #e2e8f0;
-    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    font-size: 14px;
+    height: 100%;
+    padding: 12px 16px;
+    background: transparent;
+    border: none;
+    color: #d4d4d4;
+    caret-color: #aeafad;
+    font-family: inherit;
+    font-size: 13px;
     line-height: 1.6;
     resize: none;
     outline: none;
-    transition: all 0.3s;
+    overflow: auto;
+    white-space: pre;
+    word-wrap: normal;
+    tab-size: 4;
+    -moz-tab-size: 4;
+    box-sizing: border-box;
+    z-index: 1;
 }
 
-.file-editor-textarea:focus {
-    border-color: #60a5fa;
-    background: rgba(15, 23, 42, 0.95);
-    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+.file-editor-textarea::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+.file-editor-textarea::-webkit-scrollbar-track {
+    background: #1e1e1e;
+}
+
+.file-editor-textarea::-webkit-scrollbar-thumb {
+    background: #424242;
+    border-radius: 4px;
+}
+
+.file-editor-textarea::-webkit-scrollbar-thumb:hover {
+    background: #555;
 }
 
 .file-editor-textarea::selection {
-    background: rgba(96, 165, 250, 0.3);
+    background: rgba(38, 79, 120, 0.7);
+    color: inherit;
 }
+
+.file-editor-textarea::-moz-selection {
+    background: rgba(38, 79, 120, 0.7);
+    color: inherit;
+}
+
+/* ========== SYNTAX HIGHLIGHT TOKEN COLORS (VS Code Dark+) ========== */
+/* Comments */
+.hl-comment { color: #6a9955; font-style: italic; }
+/* Strings */
+.hl-string { color: #ce9178; }
+/* Numbers */
+.hl-number { color: #b5cea8; }
+/* Keywords */
+.hl-keyword { color: #569cd6; font-weight: 500; }
+/* Boolean / null */
+.hl-boolean { color: #569cd6; }
+/* YAML keys */
+.hl-key { color: #9cdcfe; }
+/* JSON keys */
+.hl-json-key { color: #9cdcfe; }
+/* Operators / punctuation */
+.hl-operator { color: #d4d4d4; }
+/* Properties (key: value separator colons) */
+.hl-punctuation { color: #d4d4d4; }
+/* Tags / section headers */
+.hl-tag { color: #4ec9b0; }
+/* Variables / references */
+.hl-variable { color: #9cdcfe; }
+/* Types */
+.hl-type { color: #4ec9b0; }
+/* Regex */
+.hl-regex { color: #d16969; }
+/* Indent guides - subtle vertical lines */
+.hl-plain { color: #d4d4d4; }
 
 /* Editor Loading State */
 .file-editor-loading {
@@ -1518,12 +1662,23 @@
     }
 
     .file-editor-body {
-        padding: 12px;
+        padding: 8px;
+    }
+
+    .code-editor-wrapper {
+        font-size: 12px;
+    }
+
+    .code-editor-line-numbers {
+        font-size: 12px;
     }
 
     .file-editor-textarea {
-        font-size: 13px;
-        padding: 12px;
+        font-size: 12px;
+    }
+
+    .code-editor-highlight {
+        font-size: 12px;
     }
 
     .file-editor-btn {
@@ -1597,12 +1752,23 @@
     }
 
     .file-editor-body {
-        padding: 10px;
+        padding: 6px;
+    }
+
+    .code-editor-wrapper {
+        font-size: 11px;
+    }
+
+    .code-editor-line-numbers {
+        font-size: 11px;
     }
 
     .file-editor-textarea {
-        font-size: 12px;
-        padding: 10px;
+        font-size: 11px;
+    }
+
+    .code-editor-highlight {
+        font-size: 11px;
     }
 
     .file-editor-path {

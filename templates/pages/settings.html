@@ -1,0 +1,34 @@
+{{template "base" .}}
+
+{{define "title"}}Settings - Minecraft Server Controller{{end}}
+
+{{define "sidebar_menu"}}{{template "sidebar_main" .}}{{end}}
+
+{{define "content"}}
+<h1 class="page-title">Settings</h1>
+
+<div class="card">
+    <h2 class="card-title">Server Folder Path</h2>
+    
+    <!-- Alert container for settings form -->
+    <div id="settingsAlertContainer"></div>
+    
+    <form id="settingsForm">
+        {{if .CurrentPath}}
+            <div class="form-group">
+                <label>Current Path</label>
+                <div class="readonly-field" id="currentPathDisplay">{{.CurrentPath}}</div>
+            </div>
+        {{end}}
+        <div class="form-group">
+            <label for="path">Path</label>
+            <input type="text" id="path" name="path" placeholder="your/server/path" value="{{.CurrentPath}}" required>
+        </div>
+        <button type="submit" id="settingsBtn" class="btn btn-primary">Update Path</button>
+    </form>
+</div>
+{{end}}
+
+{{define "extra_scripts"}}
+<script src="/static/js/forms/forms.js"></script>
+{{end}}

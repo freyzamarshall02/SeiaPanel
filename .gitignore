@@ -1,0 +1,25 @@
+# Config (contains secrets & local paths)
+config.json
+
+# Database
+database/*.db
+database/*.sqlite
+database/*.sqlite3
+*.db
+
+# Build output
+SeiaPanel
+/SeiaPanel
+
+# Graphify analysis cache
+graphify-out/
+
+# Dev notes
+PLAN.md
+REMAINING.md
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

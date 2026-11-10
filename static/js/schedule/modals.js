@@ -42,8 +42,13 @@ const ScheduleModals = {
 
         // Escape key to close
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && this.state.isOpen) {
-                this.closeModal();
+            if (e.key === 'Escape') {
+                if (this.state.isOpen) this.closeModal();
+                // Also close delete modal if open
+                const deleteModal = document.getElementById('scheduleDeleteModal');
+                if (deleteModal && deleteModal.classList.contains('show')) {
+                    if (window.ScheduleManager) window.ScheduleManager.closeDeleteModal();
+                }
             }
         });
 
@@ -177,8 +182,14 @@ const ScheduleModals = {
      * Reset form to defaults
      */
     resetForm() {
-        const form = document.getElementById('scheduleForm');
-        if (form) form.reset();
+        // Manually reset each field instead of calling form.reset(),
+        // because form.reset() restores checkboxes to their HTML defaultChecked
+        // attribute (always true for scheduleEnabled), which can mask toggle
+        // desync bugs and confuse defaultChecked after the first render.
+
+        // Reset name
+        const nameInput = document.getElementById('scheduleName');
+        if (nameInput) nameInput.value = '';
 
         // Reset cron fields to *
         ['cronMinute', 'cronHour', 'cronDayOfMonth', 'cronMonth', 'cronDayOfWeek'].forEach(id => {
@@ -186,20 +197,23 @@ const ScheduleModals = {
             if (input) input.value = '*';
         });
 
-        // Reset toggle label
+        // Reset enabled toggle — explicitly set both the property and the label
+        const enabledInput = document.getElementById('scheduleEnabled');
         const enabledLabel = document.getElementById('scheduleEnabledLabel');
+        if (enabledInput) {
+            enabledInput.checked = true;
+            enabledInput.defaultChecked = true; // keep defaultChecked in sync
+        }
         if (enabledLabel) enabledLabel.textContent = 'Enabled';
 
-        // Reset enabled to checked
-        const enabledInput = document.getElementById('scheduleEnabled');
-        if (enabledInput) enabledInput.checked = true;
-
-        // Show command group (default action is send_command)
-        this.handleActionChange('send_command');
-
-        // Reset action to send_command
+        // Reset action to send_command and show command group
         const actionSelect = document.getElementById('scheduleAction');
         if (actionSelect) actionSelect.value = 'send_command';
+        this.handleActionChange('send_command');
+
+        // Reset command textarea
+        const commandInput = document.getElementById('scheduleCommand');
+        if (commandInput) commandInput.value = '';
     },
 
     /**
@@ -285,8 +299,9 @@ const ScheduleModals = {
         formData.append('cron_month', document.getElementById('cronMonth')?.value?.trim() || '*');
         formData.append('cron_day_of_week', document.getElementById('cronDayOfWeek')?.value?.trim() || '*');
 
-        // Enabled
-        const enabled = document.getElementById('scheduleEnabled')?.checked ? 'true' : 'false';
+        // Enabled — read the live .checked property at submit time
+        const enabledEl = document.getElementById('scheduleEnabled');
+        const enabled = enabledEl?.checked ? 'true' : 'false';
         formData.append('enabled', enabled);
 
         // Action

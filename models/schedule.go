@@ -9,21 +9,27 @@ import (
 )
 
 // Schedule represents a scheduled task for a server
+// NOTE: Enabled uses *bool (pointer) so GORM can distinguish between
+// "not provided" (nil) and explicitly set false. Without the pointer,
+// GORM treats false as a zero-value and falls back to the SQL DEFAULT (true).
 type Schedule struct {
 	ID             uint      `gorm:"primaryKey" json:"id"`
 	ServerID       uint      `gorm:"not null;index" json:"server_id"`
 	Name           string    `gorm:"not null" json:"name"`
-	CronMinute     string    `gorm:"not null" json:"cron_minute"`     // 0-59 or *
-	CronHour       string    `gorm:"not null" json:"cron_hour"`       // 0-23 or *
+	CronMinute     string    `gorm:"not null" json:"cron_minute"`       // 0-59 or *
+	CronHour       string    `gorm:"not null" json:"cron_hour"`         // 0-23 or *
 	CronDayOfMonth string    `gorm:"not null" json:"cron_day_of_month"` // 1-31 or *
-	CronMonth      string    `gorm:"not null" json:"cron_month"`      // 1-12 or *
+	CronMonth      string    `gorm:"not null" json:"cron_month"`        // 1-12 or *
 	CronDayOfWeek  string    `gorm:"not null" json:"cron_day_of_week"`  // 0-6 (0=Sunday) or *
-	Enabled        bool      `gorm:"default:true" json:"enabled"`
+	Enabled        *bool     `gorm:"not null;default:true" json:"enabled"`
 	Action         string    `gorm:"not null" json:"action"` // send_command, start_server, restart_server, stop_server
 	Command        string    `gorm:"default:''" json:"command"` // Only used for send_command action
 	CreatedAt      time.Time `json:"created_at"`
 	UpdatedAt      time.Time `json:"updated_at"`
 }
+
+// boolPtr is a helper to get a pointer to a bool value
+func boolPtr(b bool) *bool { return &b }
 
 // CreateSchedule creates a new schedule
 func CreateSchedule(serverID uint, name, cronMinute, cronHour, cronDayOfMonth, cronMonth, cronDayOfWeek string, enabled bool, action, command string) (*Schedule, error) {
@@ -74,7 +80,7 @@ func CreateSchedule(serverID uint, name, cronMinute, cronHour, cronDayOfMonth, c
 		CronDayOfMonth: cronDayOfMonth,
 		CronMonth:      cronMonth,
 		CronDayOfWeek:  cronDayOfWeek,
-		Enabled:        enabled,
+		Enabled:        boolPtr(enabled), // pointer avoids GORM zero-value/default collision
 		Action:         action,
 		Command:        command,
 	}
@@ -152,23 +158,32 @@ func (s *Schedule) UpdateSchedule(name, cronMinute, cronHour, cronDayOfMonth, cr
 	s.CronDayOfMonth = cronDayOfMonth
 	s.CronMonth = cronMonth
 	s.CronDayOfWeek = cronDayOfWeek
-	s.Enabled = enabled
+	s.Enabled = boolPtr(enabled)
 	s.Action = action
 	s.Command = command
 
-	return DB.Save(s).Error
+	return DB.Select("*").Save(s).Error
 }
 
 // ToggleEnabled toggles the enabled status of a schedule
 func (s *Schedule) ToggleEnabled() error {
-	s.Enabled = !s.Enabled
-	return DB.Save(s).Error
+	newVal := !s.IsEnabled()
+	s.Enabled = boolPtr(newVal)
+	return DB.Model(s).Update("enabled", newVal).Error
 }
 
 // SetEnabled sets the enabled status of a schedule
 func (s *Schedule) SetEnabled(enabled bool) error {
-	s.Enabled = enabled
-	return DB.Save(s).Error
+	s.Enabled = boolPtr(enabled)
+	return DB.Model(s).Update("enabled", enabled).Error
+}
+
+// IsEnabled returns the bool value of the Enabled pointer (safe nil check)
+func (s *Schedule) IsEnabled() bool {
+	if s.Enabled == nil {
+		return true // default to true if nil
+	}
+	return *s.Enabled
 }
 
 // Delete deletes a schedule

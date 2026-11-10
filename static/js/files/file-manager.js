@@ -493,11 +493,14 @@ const FileManagerCore = {
     updateFloatingActions() {
         const floatingActions = document.getElementById('floatingActions');
         if (!floatingActions) return;
-        
+
         if (FileManagerState.selectedFiles.size > 0) {
             floatingActions.classList.add('show');
+            // Signal body so CSS can hide the mobile FAB
+            document.body.classList.add('files-selected');
         } else {
             floatingActions.classList.remove('show');
+            document.body.classList.remove('files-selected');
         }
     },
 

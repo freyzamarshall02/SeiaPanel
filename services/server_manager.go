@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"sync"
@@ -33,10 +34,13 @@ type ServerProcess struct {
 
 // ServerStats holds server statistics
 type ServerStats struct {
-	MemoryMB  float64 `json:"memory_mb"`
-	MemoryGB  float64 `json:"memory_gb"`
-	PID       int     `json:"pid"`
-	IsRunning bool    `json:"is_running"`
+	MemoryMB     float64 `json:"memory_mb"`
+	MemoryGB     float64 `json:"memory_gb"`
+	PID          int     `json:"pid"`
+	IsRunning    bool    `json:"is_running"`
+	DirSizeBytes int64   `json:"dir_size_bytes"`
+	DirSizeMB    float64 `json:"dir_size_mb"`
+	DirSizeGB    float64 `json:"dir_size_gb"`
 }
 
 var (
@@ -230,12 +234,20 @@ func GetServerStats(server *models.Server) (*ServerStats, error) {
 	sp, exists := runningServers[server.ID]
 	serverMux.Unlock()
 
+	// Always compute directory size regardless of running state
+	dirSizeBytes := getDirSize(server.FolderPath)
+	dirSizeMB := float64(dirSizeBytes) / 1024.0 / 1024.0
+	dirSizeGB := dirSizeMB / 1024.0
+
 	if !exists {
 		return &ServerStats{
-			MemoryMB:  0,
-			MemoryGB:  0,
-			PID:       0,
-			IsRunning: false,
+			MemoryMB:     0,
+			MemoryGB:     0,
+			PID:          0,
+			IsRunning:    false,
+			DirSizeBytes: dirSizeBytes,
+			DirSizeMB:    dirSizeMB,
+			DirSizeGB:    dirSizeGB,
 		}, nil
 	}
 
@@ -244,10 +256,13 @@ func GetServerStats(server *models.Server) (*ServerStats, error) {
 	if err != nil {
 		log.Printf("⚠️  Failed to get memory for PID %d: %v", pid, err)
 		return &ServerStats{
-			MemoryMB:  0,
-			MemoryGB:  0,
-			PID:       pid,
-			IsRunning: true,
+			MemoryMB:     0,
+			MemoryGB:     0,
+			PID:          pid,
+			IsRunning:    true,
+			DirSizeBytes: dirSizeBytes,
+			DirSizeMB:    dirSizeMB,
+			DirSizeGB:    dirSizeGB,
 		}, nil
 	}
 
@@ -255,11 +270,27 @@ func GetServerStats(server *models.Server) (*ServerStats, error) {
 	memoryGB := memoryMB / 1024.0
 
 	return &ServerStats{
-		MemoryMB:  memoryMB,
-		MemoryGB:  memoryGB,
-		PID:       pid,
-		IsRunning: true,
+		MemoryMB:     memoryMB,
+		MemoryGB:     memoryGB,
+		PID:          pid,
+		IsRunning:    true,
+		DirSizeBytes: dirSizeBytes,
+		DirSizeMB:    dirSizeMB,
+		DirSizeGB:    dirSizeGB,
 	}, nil
+}
+
+// getDirSize returns the total size in bytes of all files inside a directory tree.
+func getDirSize(path string) int64 {
+	var totalBytes int64
+	_ = filepath.Walk(path, func(_ string, info os.FileInfo, err error) error {
+		if err != nil || info.IsDir() {
+			return nil
+		}
+		totalBytes += info.Size()
+		return nil
+	})
+	return totalBytes
 }
 
 // getProcessMemory reads memory usage from /proc/[pid]/status
@@ -364,6 +395,23 @@ func (sp *ServerProcess) readOutput(reader io.ReadCloser, isError bool) {
 	scanner := bufio.NewScanner(reader)
 	for scanner.Scan() {
 		line := scanner.Text()
+
+		// Strip carriage returns that jline may embed in the output
+		line = strings.ReplaceAll(line, "\r", "")
+
+		// Strip all leading "> " jline prompt prefixes (can appear multiple times
+		// on a single line, e.g. "> > [INFO]: ...")
+		for strings.HasPrefix(line, "> ") {
+			line = line[2:]
+		}
+		// Also strip a lone trailing ">" left over after prefix stripping
+		line = strings.TrimRight(line, "> ")
+
+		// Skip blank or pure-prompt lines
+		trimmed := strings.TrimSpace(line)
+		if trimmed == "" || trimmed == ">" {
+			continue
+		}
 
 		// Add to logs
 		sp.LogMux.Lock()

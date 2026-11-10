@@ -1,0 +1,224 @@
+{{template "base" .}}
+
+{{define "title"}}{{.Server.Name}} - Schedule{{end}}
+
+{{define "sidebar_menu"}}{{template "sidebar_server" .}}{{end}}
+
+{{define "main_body"}}
+<div class="schedule-page-container">
+    <!-- Header -->
+    <div class="schedule-header">
+        <h1 class="schedule-header-title">{{.Server.Name}} - Schedule</h1>
+        <div class="schedule-header-actions">
+            <button id="createScheduleBtn" class="schedule-btn schedule-btn-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                CREATE SCHEDULE
+            </button>
+        </div>
+    </div>
+
+    <!-- Schedule List -->
+    <div id="scheduleListContainer" class="schedule-list-container">
+        <!-- Schedules will be dynamically loaded here -->
+    </div>
+</div>
+
+<!-- Delete Confirm Modal -->
+<div id="scheduleDeleteModal" class="schedule-modal">
+    <div class="schedule-modal-content" style="max-width: 460px;">
+        <div class="schedule-modal-header">
+            <h2 class="schedule-modal-title">Delete Schedule</h2>
+            <button id="closeScheduleDeleteModal" class="schedule-modal-close">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        <div class="schedule-modal-body">
+            <div style="display:flex;align-items:center;gap:16px;margin-bottom:12px;">
+                <div style="flex-shrink:0;width:48px;height:48px;background:rgba(239,68,68,0.15);border-radius:12px;display:flex;align-items:center;justify-content:center;color:#ef4444;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        <line x1="10" y1="11" x2="10" y2="17"></line>
+                        <line x1="14" y1="11" x2="14" y2="17"></line>
+                    </svg>
+                </div>
+                <p id="scheduleDeleteMessage" style="color:#cbd5e1;margin:0;font-size:15px;line-height:1.5;"></p>
+            </div>
+        </div>
+        <div class="schedule-modal-footer">
+            <button type="button" id="cancelScheduleDelete" class="schedule-modal-btn schedule-modal-btn-cancel">Cancel</button>
+            <button type="button" id="confirmScheduleDelete" class="schedule-modal-btn" style="background:#ef4444;color:#fff;">Yes, Delete</button>
+        </div>
+    </div>
+</div>
+
+<!-- Create/Edit Schedule Modal -->
+<div id="scheduleModal" class="schedule-modal">
+    <div class="schedule-modal-content">
+        <div class="schedule-modal-header">
+            <h2 class="schedule-modal-title" id="scheduleModalTitle">Create new schedule</h2>
+            <button id="closeScheduleModal" class="schedule-modal-close">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        <form id="scheduleForm">
+            <div class="schedule-modal-body">
+                <!-- Schedule Name -->
+                <div class="schedule-form-group">
+                    <label for="scheduleName">SCHEDULE NAME</label>
+                    <input 
+                        type="text" 
+                        id="scheduleName" 
+                        name="name" 
+                        class="schedule-form-input" 
+                        placeholder=""
+                        required
+                    >
+                </div>
+
+                <!-- Cron Expression -->
+                <div class="schedule-form-group">
+                    <label class="schedule-cron-label">Cron</label>
+                    <div class="schedule-cron-fields">
+                        <div class="schedule-cron-field-group">
+                            <span class="schedule-cron-field-label">MINUTE</span>
+                            <input 
+                                type="text" 
+                                id="cronMinute" 
+                                name="cron_minute" 
+                                class="schedule-cron-field-input" 
+                                value="*"
+                                required
+                            >
+                        </div>
+                        <div class="schedule-cron-field-group">
+                            <span class="schedule-cron-field-label">HOUR</span>
+                            <input 
+                                type="text" 
+                                id="cronHour" 
+                                name="cron_hour" 
+                                class="schedule-cron-field-input" 
+                                value="*"
+                                required
+                            >
+                        </div>
+                        <div class="schedule-cron-field-group">
+                            <span class="schedule-cron-field-label">DAY OF MONTH</span>
+                            <input 
+                                type="text" 
+                                id="cronDayOfMonth" 
+                                name="cron_day_of_month" 
+                                class="schedule-cron-field-input" 
+                                value="*"
+                                required
+                            >
+                        </div>
+                        <div class="schedule-cron-field-group">
+                            <span class="schedule-cron-field-label">MONTH</span>
+                            <input 
+                                type="text" 
+                                id="cronMonth" 
+                                name="cron_month" 
+                                class="schedule-cron-field-input" 
+                                value="*"
+                                required
+                            >
+                        </div>
+                        <div class="schedule-cron-field-group">
+                            <span class="schedule-cron-field-label">DAY OF WEEK</span>
+                            <input 
+                                type="text" 
+                                id="cronDayOfWeek" 
+                                name="cron_day_of_week" 
+                                class="schedule-cron-field-input" 
+                                value="*"
+                                required
+                            >
+                        </div>
+                    </div>
+                    <small class="schedule-form-help">Use * for any value, numbers for specific values, or ranges like 1-5</small>
+                </div>
+
+                <!-- Enable Schedule -->
+                <div class="schedule-form-group">
+                    <label>Enable Schedule</label>
+                    <div class="schedule-form-toggle">
+                        <label class="schedule-toggle">
+                            <input type="checkbox" id="scheduleEnabled" name="enabled" checked>
+                            <span class="schedule-toggle-slider"></span>
+                        </label>
+                        <span class="schedule-form-toggle-label" id="scheduleEnabledLabel">Enabled</span>
+                    </div>
+                </div>
+
+                <!-- Action -->
+                <div class="schedule-form-group">
+                    <label for="scheduleAction">Action</label>
+                    <select 
+                        id="scheduleAction" 
+                        name="action" 
+                        class="schedule-form-select"
+                        required
+                    >
+                        <option value="send_command">Send Commands</option>
+                        <option value="start_server">Start Server</option>
+                        <option value="restart_server">Restart Server</option>
+                        <option value="stop_server">Stop Server</option>
+                        <option value="backup">Backup Server</option>
+                    </select>
+                </div>
+
+                <!-- Command (only visible when action is send_command) -->
+                <div class="schedule-form-group" id="commandGroup">
+                    <label for="scheduleCommand">Command (What command do you want to execute? Do not included /)</label>
+                    <textarea 
+                        id="scheduleCommand" 
+                        name="command" 
+                        class="schedule-form-textarea" 
+                        placeholder="time set day"
+                    ></textarea>
+                    <small class="schedule-form-help">Enter the command without the leading slash</small>
+                </div>
+            </div>
+            <div class="schedule-modal-footer">
+                <button type="button" id="cancelScheduleBtn" class="schedule-modal-btn schedule-modal-btn-cancel">
+                    Cancel
+                </button>
+                <button type="submit" id="submitScheduleBtn" class="schedule-modal-btn schedule-modal-btn-submit">
+                    Create Schedule
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{{end}}
+
+{{define "extra_scripts"}}
+<script src="/static/js/schedule/modals.js"></script>
+<script src="/static/js/schedule/schedule.js"></script>
+<script>
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        const serverName = '{{.Server.Name}}';
+        
+        // Initialize ScheduleModals
+        if (window.ScheduleModals) {
+            window.ScheduleModals.init();
+        }
+        
+        // Initialize ScheduleManager
+        if (window.ScheduleManager) {
+            window.ScheduleManager.init(serverName);
+        }
+    });
+</script>
+{{end}}

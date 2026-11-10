@@ -1,0 +1,16 @@
+{{define "auth"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {{template "head" .}}
+</head>
+<body class="auth-page">
+    <div class="auth-container">
+        {{block "content" .}}{{end}}
+    </div>
+
+    {{template "scripts" .}}
+    {{block "extra_scripts" .}}{{end}}
+</body>
+</html>
+{{end}}

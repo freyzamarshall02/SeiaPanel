@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"html/template"
 	"net/http"
 	"os"
 
@@ -22,21 +21,16 @@ func SettingsPage(w http.ResponseWriter, r *http.Request) {
 
 	session, _ := config.GetSessionStore().Get(r, "auth-session")
 
-	tmpl, err := template.ParseFiles("templates/settings.html")
-	if err != nil {
-		http.Error(w, "Error loading template", http.StatusInternalServerError)
-		return
-	}
-
 	data := map[string]interface{}{
 		"User":        user,
 		"CurrentPath": config.GetServerPath(),
 		"Success":     session.Flashes("success"),
 		"Error":       session.Flashes("error"),
+		"ActivePage":  "settings",
 	}
 	session.Save(r, w)
 
-	tmpl.Execute(w, data)
+	RenderPage(w, "base", "settings", data)
 }
 
 // UpdateServerPath handles server folder path update - AJAX JSON response

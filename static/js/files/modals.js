@@ -11,6 +11,7 @@ const Modals = {
         this.initNewFileModal();
         this.initRenameModal();
         this.initFloatingButtons();
+        this.initDeleteConfirmModal();
     },
 
     /**
@@ -52,6 +53,7 @@ const Modals = {
                 this.closeCreateDir();
                 this.closeNewFile();
                 this.closeRename();
+                this.closeDeleteConfirm();
             }
         });
     },
@@ -230,15 +232,71 @@ const Modals = {
     },
 
     /**
-     * Handle delete from floating button
+     * Handle delete from floating button — shows confirmation modal first
      */
-    async handleFloatingDelete() {
+    handleFloatingDelete() {
         if (FileManagerState.selectedFiles.size === 0) {
             FileUtils.showError('No files selected');
             return;
         }
 
-        // Get selected file names
+        const selectedFiles = Array.from(FileManagerState.selectedFiles);
+        let message;
+
+        if (selectedFiles.length === 1) {
+            message = `Are you sure you want to delete <strong style="color:#f87171;">${selectedFiles[0]}</strong>?`;
+        } else {
+            message = `Are you sure you want to delete <strong style="color:#f87171;">${selectedFiles.length} items</strong>?`;
+        }
+
+        this.openDeleteConfirm(message);
+    },
+
+    /**
+     * Initialize delete confirmation modal
+     */
+    initDeleteConfirmModal() {
+        const modal      = document.getElementById('deleteConfirmModal');
+        const closeBtn   = document.getElementById('closeDeleteModal');
+        const cancelBtn  = document.getElementById('cancelDelete');
+        const confirmBtn = document.getElementById('confirmDelete');
+
+        if (closeBtn)  closeBtn.addEventListener('click',  () => this.closeDeleteConfirm());
+        if (cancelBtn) cancelBtn.addEventListener('click', () => this.closeDeleteConfirm());
+        if (confirmBtn) confirmBtn.addEventListener('click', () => this.performDelete());
+
+        if (modal) {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) this.closeDeleteConfirm();
+            });
+        }
+    },
+
+    /**
+     * Open delete confirmation modal
+     */
+    openDeleteConfirm(message) {
+        const modal   = document.getElementById('deleteConfirmModal');
+        const msgEl   = document.getElementById('deleteConfirmMessage');
+
+        if (msgEl)   msgEl.innerHTML = message;
+        if (modal)   modal.classList.add('show');
+    },
+
+    /**
+     * Close delete confirmation modal
+     */
+    closeDeleteConfirm() {
+        const modal = document.getElementById('deleteConfirmModal');
+        if (modal) modal.classList.remove('show');
+    },
+
+    /**
+     * Actually perform the delete after confirmation
+     */
+    async performDelete() {
+        this.closeDeleteConfirm();
+
         const selectedFiles = Array.from(FileManagerState.selectedFiles);
 
         try {
@@ -250,9 +308,7 @@ const Modals = {
                 `/server/${FileManagerState.serverName}/files/delete`,
                 {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: formData
                 }
             );
@@ -260,14 +316,9 @@ const Modals = {
             const data = await response.json();
 
             if (data.success) {
-                console.log(`Deleted ${data.count} item(s)`);
-                
-                // Clear selection
                 FileManagerState.selectedFiles.clear();
                 FileManagerCore.updateSelectAllCheckbox();
                 FileManagerCore.updateFloatingActions();
-                
-                // Reload directory
                 FileManagerCore.loadDirectory(FileManagerState.currentPath);
             } else {
                 FileUtils.showError(data.error || 'Failed to delete files');

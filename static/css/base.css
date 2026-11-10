@@ -20,7 +20,7 @@ body {
 /* Background for all pages */
 .auth-page,
 .dashboard-page {
-    background-image: url('/static/images/background.jpg');
+    background-image: url('/static/images/background.webp');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -240,4 +240,9 @@ a {
     .mobile-nav-drawer {
         display: none !important;
     }
+}
+
+/* Hide mobile FAB when file action buttons are active (avoid overlap) */
+body.files-selected .mobile-fab-container {
+    display: none !important;
 }

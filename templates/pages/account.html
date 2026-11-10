@@ -1,0 +1,51 @@
+{{template "base" .}}
+
+{{define "title"}}Account - Minecraft Server Controller{{end}}
+
+{{define "sidebar_menu"}}{{template "sidebar_main" .}}{{end}}
+
+{{define "content"}}
+<h1 class="page-title">Account</h1>
+
+<div class="cards-row">
+    <div class="card">
+        <h2 class="card-title">Update Username</h2>
+        <!-- Alert container for username form -->
+        <div id="usernameAlertContainer"></div>
+        
+        <form id="usernameForm">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="Enter new username" value="{{.User.Username}}" required>
+            </div>
+            <button type="submit" id="usernameBtn" class="btn btn-primary">Update Username</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h2 class="card-title">Update Password</h2>
+        <!-- Alert container for password form -->
+        <div id="passwordAlertContainer"></div>
+        
+        <form id="passwordForm">
+            <div class="form-group">
+                <label for="current_password">Current Password</label>
+                <input type="password" id="current_password" name="current_password" placeholder="Enter current password" required>
+            </div>
+            <div class="form-group">
+                <label for="new_password">New Password</label>
+                <input type="password" id="new_password" name="new_password" placeholder="Enter new password" required minlength="8">
+            </div>
+            <div class="form-group">
+                <label for="confirm_password">Confirm New Password</label>
+                <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm new password" required>
+            </div>
+            <button type="submit" id="passwordBtn" class="btn btn-primary">Update Password</button>
+        </form>
+    </div>
+</div>
+{{end}}
+
+{{define "extra_scripts"}}
+<script src="/static/js/forms/forms.js"></script>
+{{end}}
