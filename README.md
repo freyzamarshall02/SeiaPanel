@@ -23,7 +23,7 @@ A lightweight, self-hosted web panel for managing Minecraft servers. Built with 
 
 ```bash
 # Download latest release (amd64)
-wget https://github.com/freyzamarshall02/SeiaPanel/releases/latest/download/seiapanel-v1.0.0-linux-amd64.tar.gz
+wget https://github.com/freyzamarshall02/SeiaPanel/releases/download/seiapanel-v1.0.1/seiapanel-v1.0.1-linux-amd64.tar.gz
 
 # Extract
 tar -xzf seiapanel-v1.0.0-linux-amd64.tar.gz
