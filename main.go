@@ -12,6 +12,12 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// Version info — injected at build time via -ldflags
+var (
+	Version   = "dev"
+	BuildTime = "unknown"
+)
+
 func main() {
 	// Initialize database
 	models.InitDatabase()
