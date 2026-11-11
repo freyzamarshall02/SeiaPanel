@@ -18,15 +18,13 @@ A lightweight, self-hosted web panel for managing Minecraft servers. Built with 
 
 - Linux (uses `/proc` filesystem for stats)
 - Java 25 — installed automatically by `install.sh`
-- Go 1.21+ — installed automatically by `install.sh` if missing
+- Go 1.21+ — only needed when installing from source; release packages include a prebuilt binary
 
 ---
 
 ## Installation
 
 ### Option A — From GitHub Releases (Recommended for VPS / Local PC)
-
-> No Go required on your machine. Just download, extract, and run the installer.
 
 **1. Download the latest release**
 
@@ -60,8 +58,7 @@ chmod +x install.sh
 
 The installer will automatically:
 - ✅ Check for Java 25 — install or replace any other version
-- ✅ Check for Go — install if missing
-- ✅ Build SeiaPanel and place it in `/opt/seiapanel/`
+- ✅ Install the prebuilt SeiaPanel binary from the release package to `/opt/seiapanel/` (Go is not required)
 - ✅ Ask if you want to set up a **systemd service** (auto-start on boot)
 
 ---
@@ -82,7 +79,7 @@ chmod +x install.sh
 ./install.sh
 ```
 
-Same automatic steps as Option A.
+The source installer checks for Go, installs it if missing, builds SeiaPanel, and places it in `/opt/seiapanel/`.
 
 ---
 

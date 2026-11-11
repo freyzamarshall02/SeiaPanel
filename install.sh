@@ -3,7 +3,7 @@
 # ============================================================
 #  SeiaPanel - install.sh
 #  Version : 1.0.1
-#  Installs Java 25, Go (if needed), builds & installs panel
+#  Installs Java 25 and installs the bundled binary or builds from source
 # ============================================================
 
 set -e
@@ -98,66 +98,83 @@ if [[ "$JAVA_VER_AFTER" -ne "$REQUIRED_JAVA" ]]; then
   error "Java ${REQUIRED_JAVA} installation failed. Please install it manually:\n  sudo apt update && sudo apt install -y openjdk-25-jdk"
 fi
 
-# ════════════════════════════════════════════════════════════
-#  STEP 2 — Go
-# ════════════════════════════════════════════════════════════
-step "Step 2/4 — Checking Go"
-
-if command -v go >/dev/null 2>&1; then
-  GO_VER=$(go version | awk '{print $3}' | sed 's/go//')
-  success "Go ${GO_VER} is already installed — skipping."
+# Determine whether this is a source checkout or a release package.
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [[ -f "${SCRIPT_DIR}/go.mod" ]]; then
+  BUILD_FROM_SOURCE=true
+elif [[ -f "${SCRIPT_DIR}/${APP_NAME}" ]]; then
+  BUILD_FROM_SOURCE=false
 else
-  info "Go not found. Installing Go ${REQUIRED_GO}..."
-  GO_TAR="go${REQUIRED_GO}.linux-amd64.tar.gz"
-  GO_URL="https://go.dev/dl/${GO_TAR}"
-
-  cd /tmp
-  info "Downloading Go from ${GO_URL}..."
-  curl -fsSL "${GO_URL}" -o "${GO_TAR}"
-  $SUDO rm -rf /usr/local/go
-  $SUDO tar -C /usr/local -xzf "${GO_TAR}"
-  rm -f "${GO_TAR}"
-
-  # Add Go to PATH for this session and persist it
-  export PATH="/usr/local/go/bin:${PATH}"
-
-  if ! grep -q '/usr/local/go/bin' /etc/profile.d/go.sh 2>/dev/null; then
-    echo 'export PATH="/usr/local/go/bin:$PATH"' | $SUDO tee /etc/profile.d/go.sh > /dev/null
-  fi
-
-  cd - > /dev/null
-  success "Go $(go version | awk '{print $3}') installed."
+  error "Neither go.mod nor the bundled ${APP_NAME} binary was found in ${SCRIPT_DIR}."
 fi
 
-command -v go >/dev/null 2>&1 || error "Go is not available in PATH. Re-open your terminal and re-run this script."
+# ════════════════════════════════════════════════════════════
+#  STEP 2 — Prepare application
+# ════════════════════════════════════════════════════════════
+if [[ "${BUILD_FROM_SOURCE}" == true ]]; then
+  step "Step 2/4 — Checking Go"
+
+  if command -v go >/dev/null 2>&1; then
+    GO_VER=$(go version | awk '{print $3}' | sed 's/go//')
+    success "Go ${GO_VER} is already installed — skipping."
+  else
+    info "Go not found. Installing Go ${REQUIRED_GO}..."
+    GO_TAR="go${REQUIRED_GO}.linux-amd64.tar.gz"
+    GO_URL="https://go.dev/dl/${GO_TAR}"
+
+    cd /tmp
+    info "Downloading Go from ${GO_URL}..."
+    curl -fsSL "${GO_URL}" -o "${GO_TAR}"
+    $SUDO rm -rf /usr/local/go
+    $SUDO tar -C /usr/local -xzf "${GO_TAR}"
+    rm -f "${GO_TAR}"
+
+    export PATH="/usr/local/go/bin:${PATH}"
+
+    if ! grep -q '/usr/local/go/bin' /etc/profile.d/go.sh 2>/dev/null; then
+      echo 'export PATH="/usr/local/go/bin:$PATH"' | $SUDO tee /etc/profile.d/go.sh > /dev/null
+    fi
+
+    cd - > /dev/null
+    success "Go $(go version | awk '{print $3}') installed."
+  fi
+
+  command -v go >/dev/null 2>&1 || error "Go is not available in PATH. Re-open your terminal and re-run this script."
+else
+  step "Step 2/4 — Using bundled binary"
+  success "Found release binary — Go is not required."
+fi
 
 # ════════════════════════════════════════════════════════════
 #  STEP 3 — Build & Install SeiaPanel
 # ════════════════════════════════════════════════════════════
-step "Step 3/4 — Building & Installing SeiaPanel"
+step "Step 3/4 — Installing SeiaPanel"
 
-# Determine script location (project root)
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "${SCRIPT_DIR}"
 
-info "Tidying Go modules..."
-go mod tidy
+if [[ "${BUILD_FROM_SOURCE}" == true ]]; then
+  info "Tidying Go modules..."
+  go mod tidy
 
-info "Building SeiaPanel v${VERSION}..."
-BUILD_TIME=$(date -u '+%Y-%m-%dT%H:%M:%SZ')
-mkdir -p dist
+  info "Building SeiaPanel v${VERSION}..."
+  BUILD_TIME=$(date -u '+%Y-%m-%dT%H:%M:%SZ')
+  mkdir -p dist
 
-GOOS=linux GOARCH=amd64 CGO_ENABLED=1 \
-  go build \
-    -ldflags="-s -w -X main.Version=${VERSION} -X main.BuildTime=${BUILD_TIME}" \
-    -o "dist/${APP_NAME}" \
-    .
+  GOOS=linux GOARCH=amd64 CGO_ENABLED=1 \
+    go build \
+      -ldflags="-s -w -X main.Version=${VERSION} -X main.BuildTime=${BUILD_TIME}" \
+      -o "dist/${APP_NAME}" \
+      .
 
-[[ -f "dist/${APP_NAME}" ]] || error "Build failed — binary not produced."
+  BINARY_PATH="${SCRIPT_DIR}/dist/${APP_NAME}"
+  [[ -f "${BINARY_PATH}" ]] || error "Build failed — binary not produced."
+else
+  BINARY_PATH="${SCRIPT_DIR}/${APP_NAME}"
+fi
 
 # Install binary
 $SUDO mkdir -p "${INSTALL_DIR}"
-$SUDO cp "dist/${APP_NAME}" "${INSTALL_DIR}/${APP_NAME}"
+$SUDO cp "${BINARY_PATH}" "${INSTALL_DIR}/${APP_NAME}"
 $SUDO chmod +x "${INSTALL_DIR}/${APP_NAME}"
 
 # Copy templates & static assets if they exist
