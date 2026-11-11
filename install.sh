@@ -13,7 +13,7 @@ VERSION="1.0.1"
 INSTALL_DIR="/opt/seiapanel"
 BIN_LINK="/usr/local/bin/${APP_NAME}"
 REQUIRED_JAVA=25
-REQUIRED_GO="1.21"
+REQUIRED_GO="1.21.13"
 
 # ── colours ─────────────────────────────────────────────────
 RED='\033[0;31m'
