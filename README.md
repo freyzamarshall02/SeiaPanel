@@ -59,7 +59,7 @@ chmod +x install.sh
 The installer will automatically:
 - ✅ Check for Java 25 — install or replace any other version
 - ✅ Install the prebuilt SeiaPanel binary from the release package to `/opt/seiapanel/` (Go is not required)
-- ✅ Ask if you want to set up a **systemd service** (auto-start on boot)
+- ✅ Ask if you want to set up a **systemd service** (auto-start on boot); when enabled, the service runs as your user and owns its application directory for runtime data
 
 ---
 

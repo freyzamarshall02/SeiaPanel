@@ -207,8 +207,10 @@ else
   # Determine which user to run the service as
   RUN_USER="${SUDO_USER:-$USER}"
   [[ "$RUN_USER" == "root" ]] && RUN_USER="root"
+  RUN_GROUP=$(id -gn "${RUN_USER}") || error "Could not determine the primary group for ${RUN_USER}."
 
   info "Creating systemd service as user: ${RUN_USER}"
+  $SUDO chown -R "${RUN_USER}:${RUN_GROUP}" "${INSTALL_DIR}"
 
   $SUDO bash -c "cat > ${SERVICE_FILE}" <<EOF
 [Unit]
