@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-VERSION=${1:-"v1.0.0"}
+VERSION=${1:-"v1.0.1"}
 APP="seiapanel"
 DIST="dist"
 
