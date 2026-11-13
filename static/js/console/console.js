@@ -126,7 +126,7 @@ const MINECRAFT_COLORS = {
     'f': '#ffffff'
 };
 
-const ANSI_OR_MINECRAFT_COLOR_PATTERN = /\x1b\[[0-9;]*m|§[0-9A-FK-ORa-fk-or]/;
+const ANSI_OR_MINECRAFT_COLOR_PATTERN = /\x1b\[[0-9;:]*m|§(?:x(?:§[0-9A-F]){6}|[0-9A-FK-OR])/i;
 const LOG_LEVEL_PATTERN = /(?:^|\[|[\s/])(INFO|WARN|WARNING|ERROR|SEVERE|FATAL|DEBUG|TRACE)(?=\]|\s|:)/i;
 const LOG_LEVEL_CLASS_MAP = {
     info: 'console-line-info',
@@ -196,7 +196,7 @@ function getPlainLogLevelClass(text) {
  * @param {string} text - Raw text
  */
 function renderAnsiText(target, text) {
-    const colorPattern = /\x1b\[([0-9;]*)m|§([0-9A-FK-ORa-fk-or])/g;
+    const colorPattern = /\x1b\[([0-9;:]*)m|§x(?:§[0-9a-f]){6}|§([0-9a-fk-or])/gi;
     let lastIndex = 0;
     let style = createDefaultAnsiStyle();
     let match;
@@ -205,6 +205,8 @@ function renderAnsiText(target, text) {
         appendStyledText(target, text.slice(lastIndex, match.index), style);
         if (match[1] !== undefined) {
             style = applyAnsiCodes(style, match[1]);
+        } else if (match[0].toLowerCase().startsWith('§x')) {
+            style = applyMinecraftHexCode(style, match[0]);
         } else {
             style = applyMinecraftCode(style, match[2]);
         }
@@ -303,10 +305,28 @@ function applyMinecraftCode(currentStyle, rawCode) {
     return style;
 }
 
+function applyMinecraftHexCode(currentStyle, rawCode) {
+    const color = rawCode.match(/[0-9a-f]/gi).join('');
+    const style = createDefaultAnsiStyle();
+    style.color = '#' + color;
+    return style;
+}
+
 function applyAnsiCodes(currentStyle, codeString) {
-    const codes = codeString === '' ? [0] : codeString.split(';').map(function(code) {
-        const parsed = parseInt(code, 10);
-        return Number.isNaN(parsed) ? 0 : parsed;
+    const parameters = codeString === '' ? ['0'] : codeString.split(';');
+    const codes = parameters.flatMap(function(parameter) {
+        const parts = parameter.split(':');
+        const code = parseInt(parts[0], 10);
+
+        if ((code === 38 || code === 48) && parts[1] === '2' && parts.length >= 5) {
+            return [code, 2].concat(parts.slice(-3).map(parseAnsiParameter));
+        }
+
+        if ((code === 38 || code === 48) && parts[1] === '5' && parts.length >= 3) {
+            return [code, 5, parseAnsiParameter(parts[parts.length - 1])];
+        }
+
+        return parts.map(parseAnsiParameter);
     });
     const style = Object.assign({}, currentStyle);
 
@@ -353,6 +373,11 @@ function applyAnsiCodes(currentStyle, codeString) {
     }
 
     return style;
+}
+
+function parseAnsiParameter(parameter) {
+    const parsed = parseInt(parameter, 10);
+    return Number.isNaN(parsed) ? 0 : parsed;
 }
 
 function parseExtendedAnsiColor(codes, startIndex) {
